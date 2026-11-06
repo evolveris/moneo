@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, SUSE_Mono } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -7,8 +7,8 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const suseMono = SUSE_Mono({
+  variable: "--font-suse-mono",
   subsets: ["latin"],
 });
 
@@ -21,12 +21,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${suseMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <header className="border-b">
           <div className="mx-auto flex w-full max-w-5xl items-baseline gap-3 px-4 py-4">
-            <span className="text-lg font-semibold">Moneo</span>
+            <span className="font-heading text-lg font-semibold">Moneo</span>
             <span className="text-sm text-muted-foreground">
               The why behind the buy
             </span>

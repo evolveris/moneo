@@ -21,6 +21,7 @@ None. This slice has no user behaviour from the SPEC. It only creates the base t
 - shadcn/ui initialised, with one component added (`Button`) to prove the setup works.
 - Root layout: header with the app name "Moneo" and the tagline, a main content area, and a placeholder home page.
 - Page metadata (title, description).
+- SUSE Mono (Google Fonts, via `next/font`) for headings, the logo and, later, numbers and amounts (`font-mono`). Body text stays on Geist until the author picks one.
 - `README.md` with how to install and run.
 - `.gitignore` check (already has `.env*`, `node_modules/`, `.next/`).
 
@@ -60,4 +61,5 @@ Defaults I will use unless you say otherwise:
 - Package manager switched from pnpm to npm after review.
 - Scaffolded in a temp folder and copied in, because `create-next-app` refuses a folder that has `AGENTS.md` and `CLAUDE.md`.
 - Added `noUncheckedIndexedAccess` on top of `strict`.
+- Added SUSE Mono at the author's request, to the same PR. Body font is still Geist (placeholder).
 - shadcn style is the CLI default (`base-nova`), neutral base colour.
