@@ -53,3 +53,13 @@ A slice is a thin vertical piece of the app that works end to end and can be dem
 - Small enough to review in one sitting.
 - Tests for the scenarios the slice covers must pass before the pull request is opened. Say so in the description, and say what you did not test.
 - Do not mix refactors with feature work.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
