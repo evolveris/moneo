@@ -8,8 +8,8 @@ A slice's detailed plan (`NN-name.md`, from `_template.md`) is written only when
 
 | Slice | Name | Journeys | Status |
 |---|---|---|---|
-| 00 | App: Next.js, strict TypeScript, Tailwind, shadcn, layout | - | planned |
-| 01 | Deploy: Vercel, preview per pull request, environment variables documented | - | planned |
+| 00 | App: Next.js, strict TypeScript, Tailwind, shadcn, layout | - | merged |
+| 01 | Deploy: Vercel, preview per pull request, environment variables documented | - | plan written |
 | 02 | Database: Neo4j AuraDB connection, server-only client, health check | - | planned |
 | 03 | Tooling: Vitest, lint and format, CI check, Zod installed | - | planned |
 | 04 | Domain core, no UI: money in pence, Zod schemas, category and context lists, mode flag, `getLimits` | shared rules | planned |
