@@ -1,6 +1,6 @@
 # Slice 01: Deploy
 
-- Status: planned
+- Status: in progress
 - Journeys: none (foundation)
 - Depends on: slice 00 (merged), ADR-001 (Vercel for hosting)
 - Branch / PR: `slice-01-deploy` / not opened yet
@@ -52,4 +52,7 @@ No application code changes. The Vercel setup lives in the Vercel dashboard, not
 
 ## Decisions made during the slice
 
-None yet.
+- Vercel Hobby account (author's answer).
+- Vercel project was created by the author in the dashboard, production URL https://moneo-neon.vercel.app/.
+- `.env.example` lists only the Neo4j variable names (`NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`). The AI key and the mode flag wait for their decisions.
+- Preview access: left at the Vercel default, to be revisited if needed.
