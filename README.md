@@ -6,11 +6,11 @@ Project rules for contributors and AI agents are in `AGENTS.md`. The slice plan 
 
 ## Run locally
 
-Needs Node 22 and pnpm.
+Needs Node 22 and npm.
 
 ```bash
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 Open http://localhost:3000.
@@ -18,9 +18,9 @@ Open http://localhost:3000.
 ## Checks
 
 ```bash
-pnpm build
-pnpm exec tsc --noEmit
-pnpm lint
+npm run build
+npx tsc --noEmit
+npm run lint
 ```
 
-Run `pnpm build` first: Next.js generates some types (like `LayoutProps`) during the build.
+Run `npm run build` first: Next.js generates some types (like `LayoutProps`) during the build.
