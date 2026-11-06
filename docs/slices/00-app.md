@@ -1,9 +1,9 @@
 # Slice 00: App
 
-- Status: in review
+- Status: merged
 - Journeys: none (foundation)
 - Depends on: ADR-001 (stack)
-- Branch / PR: `slice-00-app` / PR link in the pull request
+- Branch / PR: `slice-00-app` / PR #1
 
 ## Goal
 
