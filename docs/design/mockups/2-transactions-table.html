@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup: Transactions (DRAFT)</title>
+<link rel="stylesheet" href="mockup.css">
+<style>
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .toolbar .grow { flex: 1; min-width: 180px; }
+  .ctx { display: inline-flex; gap: 4px; align-items: center; }
+  .ctx i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--muted); display: inline-block; }
+  .ctx i.on { background: var(--text-2); border-color: var(--text-2); }
+  .ctx-prompt { color: var(--muted); font-size: 12.5px; text-decoration: underline dotted; cursor: pointer; }
+  .edit-cell { display: grid; gap: 4px; justify-items: end; }
+  .orig { font-size: 12px; color: var(--muted); }
+  .count { color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body data-initial="populated">
+
+<div class="demo-banner demo-only">Demo data only.</div>
+<header class="app-header">
+  <div class="app-header-inner">
+    <a class="logo" href="#">Moneo</a>
+    <nav class="nav" aria-label="Main">
+      <a href="2-transactions-table.html" aria-current="page">Transactions</a>
+      <a href="4-insights.html">Insights</a>
+      <a href="1-import-review.html">Import</a>
+    </nav>
+    <div class="header-actions demo-only">
+      <button class="btn small">Checklist</button>
+      <button class="btn small danger">Reset demo</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- empty -->
+  <section data-show="empty" class="card state-panel" aria-label="No transactions yet">
+    <h1>Nothing here yet</h1>
+    <p>Bring in a bank statement to see where your money goes, and why.</p>
+    <div class="row" style="justify-content:center">
+      <button class="btn primary demo-only">Load demo data</button>
+      <button class="btn">Import a statement</button>
+    </div>
+    <p class="hint demo-only">In demo mode the import step offers sample files only.</p>
+  </section>
+
+  <!-- error -->
+  <section data-show="error" class="card state-panel" role="alert">
+    <h1>Can't reach your data</h1>
+    <p>Something went wrong on our side. Nothing is lost. We don't show a partial list, so you're not left guessing.</p>
+    <button class="btn primary">Try again</button>
+  </section>
+
+  <!-- populated / editing / undo / filtered-empty -->
+  <section data-show="populated editing undo filtered">
+    <div class="page-head">
+      <div>
+        <h1>Transactions</h1>
+        <p class="count" data-show="populated editing undo">5,000 transactions · Jan – Dec 2025</p>
+        <p class="count" data-show="filtered">0 transactions match these filters</p>
+      </div>
+    </div>
+
+    <div class="toolbar" role="search">
+      <input class="field grow" type="search" placeholder="Search description" aria-label="Search description">
+      <select class="field" aria-label="Month"><option>All months</option><option>Nov 2026</option></select>
+      <select class="field" aria-label="Category"><option>All categories</option><option>Groceries</option></select>
+      <select class="field" aria-label="Context"><option>Any context</option><option>No context</option></select>
+      <button class="btn" data-show="filtered">Clear filters</button>
+    </div>
+
+    <div class="table-wrap" data-show="populated editing undo">
+      <table class="data responsive">
+        <thead>
+          <tr><th>Date</th><th>Description</th><th>Category</th><th>Context</th><th class="num">Amount</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-date mono">06 Nov 2026</td>
+            <td class="col-desc">TESCO STORES 3214</td>
+            <td class="col-cat"><span class="cat" data-c="groceries">Groceries</span></td>
+            <td class="col-ctx"><span class="ctx" aria-label="Context complete: 3 of 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td class="col-amt num amount out">£41.07</td>
+          </tr>
+
+          <!-- the row being edited -->
+          <tr>
+            <td class="col-date mono">05 Nov 2026</td>
+            <td class="col-desc">PRET A MANGER 0412 <span class="chip edited" data-show="editing undo">edited</span></td>
+            <td class="col-cat">
+              <span data-show="populated editing"><span class="cat" data-c="groceries">Groceries</span></span>
+              <span data-show="undo"><span class="cat" data-c="eating">Eating out</span></span>
+            </td>
+            <td class="col-ctx"><span class="ctx" aria-label="Context partial: 1 of 3"><i class="on"></i><i></i><i></i></span></td>
+            <td class="col-amt num">
+              <span data-show="populated undo" class="amount out click-edit" tabindex="0" role="button" aria-label="Edit amount">£6.45</span>
+              <div class="edit-cell" data-show="editing">
+                <input class="field invalid mono" value="six.45" aria-label="Amount" aria-invalid="true" aria-describedby="amt-err" style="width:110px; text-align:right">
+                <div class="error-text" id="amt-err">Enter an amount like 6.45. Still £6.45.</div>
+                <div class="orig">Imported as −£6.45</div>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="col-date mono">05 Nov 2026</td>
+            <td class="col-desc">TFL TRAVEL CH</td>
+            <td class="col-cat"><span class="cat" data-c="transport">Transport</span></td>
+            <td class="col-ctx"><span class="ctx-prompt">add context</span></td>
+            <td class="col-amt num amount out">£8.90</td>
+          </tr>
+          <tr>
+            <td class="col-date mono">04 Nov 2026</td>
+            <td class="col-desc">SQ *KILN AND CO</td>
+            <td class="col-cat"><span class="cat" data-c="none">Uncategorised</span></td>
+            <td class="col-ctx"><span class="ctx-prompt">add context</span></td>
+            <td class="col-amt num amount out">£14.00</td>
+          </tr>
+          <tr>
+            <td class="col-date mono">03 Nov 2026</td>
+            <td class="col-desc">SALARY ACME LTD</td>
+            <td class="col-cat"><span class="cat" data-c="none">Income</span></td>
+            <td class="col-ctx"></td>
+            <td class="col-amt num amount in">£2,480.00</td>
+          </tr>
+          <tr>
+            <td class="col-date mono">02 Nov 2026</td>
+            <td class="col-desc">OCTOPUS ENERGY DD</td>
+            <td class="col-cat"><span class="cat" data-c="bills">Bills</span></td>
+            <td class="col-ctx"><span class="ctx-prompt">add context</span></td>
+            <td class="col-amt num amount out">£84.20</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card state-panel" data-show="filtered">
+      <h2>No transactions match</h2>
+      <p>There is data, but none for these filters. This isn't an empty app.</p>
+      <button class="btn">Clear filters</button>
+    </div>
+
+    <p class="draft-note" data-show="populated editing undo">
+      Draft decisions shown: spending as a true minus sign, income with a plus, amounts right-aligned and tabular in SUSE Mono; category chips carry a text label as well as a colour; context shown as three dots (mood, why, outcome) with a quiet "add context" prompt where there is none; "edited" marker; click-to-edit amount validated on commit with the old value kept; narrow screens turn rows into cards (resize the window under 720px).
+    </p>
+  </section>
+</main>
+
+<div class="toast" data-show="undo" role="status">
+  <span>Category changed to <strong>Eating out</strong>.</span>
+  <button class="btn small">Apply to 5 other transactions from this merchant</button>
+  <button class="btn small">Undo</button>
+  <span class="timer" aria-hidden="true">10s</span>
+</div>
+
+<div class="mockup-bar">
+  <span class="label">Mockup state:</span>
+  <button data-state-btn="populated">Populated</button>
+  <button data-state-btn="editing">Editing an amount (invalid)</button>
+  <button data-state-btn="undo">Category changed + undo</button>
+  <button data-state-btn="filtered">Filtered to nothing</button>
+  <button data-state-btn="empty">Empty</button>
+  <button data-state-btn="error">Error</button>
+  <span class="sep"></span>
+  <button id="demo-toggle" aria-pressed="true">Demo layer: on (demo mode)</button>
+</div>
+<script src="mockup.js"></script>
+</body>
+</html>

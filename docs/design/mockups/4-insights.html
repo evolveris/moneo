@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup: Insights (DRAFT)</title>
+<link rel="stylesheet" href="mockup.css">
+<style>
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .tabs button { background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 14px; cursor: pointer; color: var(--text-2); }
+  .tabs button[aria-pressed="true"] { color: var(--text); border-bottom-color: var(--accent); }
+  .headline { font-family: var(--font-mono); font-size: 28px; font-variant-numeric: tabular-nums; }
+  .bars { display: grid; gap: 8px; }
+  .bar-row { display: grid; grid-template-columns: 150px 1fr 110px; gap: 12px; align-items: center; }
+  .bar-label { display: flex; align-items: center; gap: 8px; }
+  .bar-track { height: 18px; border-radius: 0 4px 4px 0; position: relative; }
+  .bar-fill { height: 100%; border-radius: 0 4px 4px 0; background: var(--fill, var(--accent)); }
+  .bar-value { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .bar-row.clickable { cursor: pointer; border-radius: 6px; padding: 2px 4px; margin: 0 -4px; }
+  .bar-row.clickable:hover { background: var(--surface-2); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--text-2); margin-top: 12px; }
+  .legend .cat { gap: 6px; }
+  svg text { font-family: var(--font-body); font-size: 11px; fill: var(--muted); }
+  svg .axis { stroke: var(--border); }
+  svg .grid { stroke: #262623; }
+  .progress { height: 10px; background: var(--surface-2); border-radius: 5px; overflow: hidden; margin: 8px 0; }
+  .progress > div { height: 100%; width: 18%; background: var(--accent); }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .seg button { background: var(--surface); border: 0; padding: 6px 14px; cursor: pointer; border-right: 1px solid var(--border); }
+  .seg button:last-child { border-right: 0; }
+  .seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
+  .prompt-row { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .prompt-row:last-child { border-bottom: 0; }
+</style>
+</head>
+<body data-initial="category">
+
+<div class="demo-banner demo-only">Demo data only.</div>
+<header class="app-header">
+  <div class="app-header-inner">
+    <a class="logo" href="#">Moneo</a>
+    <nav class="nav" aria-label="Main">
+      <a href="2-transactions-table.html">Transactions</a>
+      <a href="4-insights.html" aria-current="page">Insights</a>
+      <a href="1-import-review.html">Import</a>
+    </nav>
+    <div class="header-actions demo-only">
+      <button class="btn small">Checklist</button>
+      <button class="btn small danger">Reset demo</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="page-head">
+    <div>
+      <h1>Insights</h1>
+      <p>Where your money went, and why.</p>
+    </div>
+  </div>
+
+  <div class="tabs" role="group" aria-label="Insight views">
+    <button data-state-btn="category">By category</button>
+    <button data-state-btn="trend">12-month trend</button>
+    <button data-state-btn="behaviour-mood">Behaviour</button>
+  </div>
+
+  <!-- ===== By category ===== -->
+  <section data-show="category category-table filtered" class="stack">
+    <div class="row spread">
+      <div class="row">
+        <button class="btn small" aria-label="Previous month">‹</button>
+        <h2 data-show="category category-table">November 2026</h2>
+        <h2 data-show="filtered">August 2025</h2>
+        <button class="btn small" aria-label="Next month">›</button>
+      </div>
+      <div class="row">
+        <select class="field" aria-label="Hide a category"><option>Hide a category…</option><option>Bills</option></select>
+        <button class="btn small" data-state-btn="category-table" data-show="category">View as table</button>
+        <button class="btn small" data-state-btn="category" data-show="category-table">View as chart</button>
+      </div>
+    </div>
+
+    <div class="card stack" data-show="category category-table">
+      <div>
+        <div class="hint">Spent this month</div>
+        <div class="headline">−£2,290.00</div>
+        <div class="hint">Income this month: <span class="mono">+£2,480.00</span> (shown separately, never in the chart)</div>
+      </div>
+
+      <div class="bars" data-show="category" role="list" aria-label="Spending by category">
+        <div class="bar-row clickable" role="listitem">
+          <div class="bar-label"><span class="cat" data-c="groceries">Groceries</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%; --fill:var(--c-groceries)"></div></div>
+          <div class="bar-value">£640.00</div>
+        </div>
+        <div class="bar-row clickable" role="listitem">
+          <div class="bar-label"><span class="cat" data-c="bills">Bills</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:95.3%; --fill:var(--c-bills)"></div></div>
+          <div class="bar-value">£610.00</div>
+        </div>
+        <div class="bar-row clickable" role="listitem">
+          <div class="bar-label"><span class="cat" data-c="eating">Eating out</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:53.1%; --fill:var(--c-eating)"></div></div>
+          <div class="bar-value">£340.00</div>
+        </div>
+        <div class="bar-row clickable" role="listitem">
+          <div class="bar-label"><span class="cat" data-c="shopping">Shopping</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:45.3%; --fill:var(--c-shopping)"></div></div>
+          <div class="bar-value">£290.00</div>
+        </div>
+        <div class="bar-row clickable" role="listitem">
+          <div class="bar-label"><span class="cat" data-c="transport">Transport</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:32.8%; --fill:var(--c-transport)"></div></div>
+          <div class="bar-value">£210.00</div>
+        </div>
+        <div class="bar-row clickable" role="listitem">
+          <div class="bar-label"><span class="cat" data-c="fun">Entertainment</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:18.8%; --fill:var(--c-fun)"></div></div>
+          <div class="bar-value">£120.00</div>
+        </div>
+        <div class="bar-row clickable" role="listitem">
+          <div class="bar-label"><span class="cat" data-c="none">Uncategorised</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:12.5%; --fill:var(--c-none)"></div></div>
+          <div class="bar-value">£80.00</div>
+        </div>
+        <p class="hint">Click a category to see its transactions. Uncategorised spending is included in the total, not hidden.</p>
+      </div>
+
+      <div data-show="category-table" class="table-wrap">
+        <table class="data">
+          <thead><tr><th>Category</th><th class="num">Spent</th><th class="num">Share</th></tr></thead>
+          <tbody>
+            <tr><td>Groceries</td><td class="num mono">£640.00</td><td class="num mono">28%</td></tr>
+            <tr><td>Bills</td><td class="num mono">£610.00</td><td class="num mono">27%</td></tr>
+            <tr><td>Eating out</td><td class="num mono">£340.00</td><td class="num mono">15%</td></tr>
+            <tr><td>Shopping</td><td class="num mono">£290.00</td><td class="num mono">13%</td></tr>
+            <tr><td>Transport</td><td class="num mono">£210.00</td><td class="num mono">9%</td></tr>
+            <tr><td>Entertainment</td><td class="num mono">£120.00</td><td class="num mono">5%</td></tr>
+            <tr><td>Uncategorised</td><td class="num mono">£80.00</td><td class="num mono">3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card state-panel" data-show="filtered">
+      <h2>No spending in August 2025</h2>
+      <p>You have data, just none for this month. Try another month.</p>
+      <button class="btn">Go to latest month</button>
+    </div>
+  </section>
+
+  <!-- ===== 12-month trend ===== -->
+  <section data-show="trend" class="stack">
+    <div class="card">
+      <div class="row spread" style="margin-bottom:8px">
+        <div>
+          <h2>Spending per month</h2>
+          <p class="hint">Last 12 months, stacked by category. Hover or focus a bar for the figures.</p>
+        </div>
+        <button class="btn small">View as table</button>
+      </div>
+      <svg id="trend" role="img" aria-label="Monthly spending, Dec 2025 to Nov 2026, stacked by category" viewBox="0 0 760 290" width="100%"></svg>
+      <div class="legend" id="trend-legend"></div>
+    </div>
+  </section>
+
+  <!-- ===== Behaviour ===== -->
+  <section data-show="behaviour-mood behaviour-why" class="stack">
+    <div class="row spread">
+      <div class="seg" role="group" aria-label="Group spending by">
+        <button data-state-btn="behaviour-mood">How I felt</button>
+        <button data-state-btn="behaviour-why">Why I bought it</button>
+      </div>
+      <select class="field" aria-label="Month"><option>November 2026</option></select>
+    </div>
+
+    <div class="card">
+      <h2>18% of spending has context</h2>
+      <div class="progress" role="img" aria-label="18 percent"><div></div></div>
+      <p class="muted">£412 of £2,290.00. The rest is grouped as "No context", so this view stays honest.</p>
+    </div>
+
+    <div class="card stack">
+      <div class="bars" data-show="behaviour-mood">
+        <div class="bar-row"><div class="bar-label">stressed</div><div class="bar-track"><div class="bar-fill" style="width:7.5%"></div></div><div class="bar-value">£140.00</div></div>
+        <div class="bar-row"><div class="bar-label">bored</div><div class="bar-track"><div class="bar-fill" style="width:4.8%"></div></div><div class="bar-value">£90.00</div></div>
+        <div class="bar-row"><div class="bar-label">happy</div><div class="bar-track"><div class="bar-fill" style="width:4.3%"></div></div><div class="bar-value">£80.00</div></div>
+        <div class="bar-row"><div class="bar-label">tired</div><div class="bar-track"><div class="bar-fill" style="width:3.3%"></div></div><div class="bar-value">£62.00</div></div>
+        <div class="bar-row"><div class="bar-label">calm</div><div class="bar-track"><div class="bar-fill" style="width:2.1%"></div></div><div class="bar-value">£40.00</div></div>
+        <div class="bar-row"><div class="bar-label muted">No context</div><div class="bar-track"><div class="bar-fill" style="width:100%; --fill:var(--c-none)"></div></div><div class="bar-value">£1,878.00</div></div>
+      </div>
+      <div class="bars" data-show="behaviour-why">
+        <div class="bar-row"><div class="bar-label">impulse</div><div class="bar-track"><div class="bar-fill" style="width:8%"></div></div><div class="bar-value">£150.00</div></div>
+        <div class="bar-row"><div class="bar-label">habit</div><div class="bar-track"><div class="bar-fill" style="width:6.4%"></div></div><div class="bar-value">£120.00</div></div>
+        <div class="bar-row"><div class="bar-label">need</div><div class="bar-track"><div class="bar-fill" style="width:3.8%"></div></div><div class="bar-value">£72.00</div></div>
+        <div class="bar-row"><div class="bar-label">treat</div><div class="bar-track"><div class="bar-fill" style="width:3.7%"></div></div><div class="bar-value">£70.00</div></div>
+        <div class="bar-row"><div class="bar-label muted">No context</div><div class="bar-track"><div class="bar-fill" style="width:100%; --fill:var(--c-none)"></div></div><div class="bar-value">£1,878.00</div></div>
+      </div>
+      <p class="hint">Bars are scaled to the biggest group, "No context". That is deliberate: it shows how little of your spending you have explained so far.</p>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-bottom:4px">Add context to your biggest unexplained spending</h2>
+      <p class="muted" style="margin-bottom:8px">A few quick answers here make the chart above more useful.</p>
+      <div class="prompt-row"><div>OCTOPUS ENERGY DD <span class="muted mono">· 02 Nov</span></div><div class="mono">−£84.20</div><button class="btn small">Add context</button></div>
+      <div class="prompt-row"><div>TESCO STORES 3214 <span class="muted mono">· 06 Nov</span></div><div class="mono">−£82.15</div><button class="btn small">Add context</button></div>
+      <div class="prompt-row"><div>AMZN MKTP UK <span class="muted mono">· 28 Oct</span></div><div class="mono">−£68.99</div><button class="btn small">Add context</button></div>
+    </div>
+  </section>
+
+  <p class="draft-note">Draft decisions shown: horizontal bars for category (labels and values sit next to every bar, so nothing depends on colour); a "view as table" for every chart; income kept out of the spending chart; uncategorised and "No context" shown as honest groups; a prompt to add context where it matters most. Chart colours are the six fixed category colours, validated for the dark surface with the dataviz palette checker (colour-blind separation is in the 8.4 to 8.7 band, so direct labels and the legend are required, and are present).</p>
+</main>
+
+<div class="mockup-bar">
+  <span class="label">Mockup state:</span>
+  <button data-state-btn="category">Category</button>
+  <button data-state-btn="category-table">Category (table view)</button>
+  <button data-state-btn="filtered">Month with no spending</button>
+  <button data-state-btn="trend">12-month trend</button>
+  <button data-state-btn="behaviour-mood">Behaviour: feeling</button>
+  <button data-state-btn="behaviour-why">Behaviour: reason</button>
+  <span class="sep"></span>
+  <button id="demo-toggle" aria-pressed="true">Demo layer: on (demo mode)</button>
+</div>
+<script src="mockup.js"></script>
+<script>
+  // Mockup only: build the stacked trend chart from fake numbers (pounds).
+  (function () {
+    var months = ["Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov"];
+    var cats = [
+      { n: "Groceries", c: "var(--c-groceries)", v: [610, 580, 560, 620, 590, 600, 570, 640, 610, 600, 620, 640] },
+      { n: "Bills", c: "var(--c-bills)", v: [600, 600, 610, 610, 600, 610, 610, 610, 600, 610, 610, 610] },
+      { n: "Eating out", c: "var(--c-eating)", v: [420, 260, 240, 300, 310, 330, 380, 360, 300, 320, 330, 340] },
+      { n: "Shopping", c: "var(--c-shopping)", v: [520, 140, 120, 200, 180, 210, 190, 260, 240, 230, 270, 290] },
+      { n: "Transport", c: "var(--c-transport)", v: [180, 190, 170, 200, 210, 190, 200, 220, 210, 200, 200, 210] },
+      { n: "Entertainment", c: "var(--c-fun)", v: [150, 90, 80, 100, 110, 120, 140, 130, 110, 100, 110, 120] },
+      { n: "Uncategorised", c: "var(--c-none)", v: [90, 70, 60, 80, 70, 60, 90, 80, 70, 80, 90, 80] }
+    ];
+    var W = 760, H = 290, L = 48, R = 8, T = 10, B = 28;
+    var plotW = W - L - R, plotH = H - T - B, max = 3000;
+    var slot = plotW / months.length, bw = slot * 0.6;
+    var ns = "http://www.w3.org/2000/svg", svg = document.getElementById("trend");
+    function el(n, a, t) { var e = document.createElementNS(ns, n); for (var k in a) e.setAttribute(k, a[k]); if (t) e.textContent = t; svg.appendChild(e); return e; }
+    [0, 1000, 2000, 3000].forEach(function (g) {
+      var y = T + plotH - (g / max) * plotH;
+      el("line", { x1: L, x2: W - R, y1: y, y2: y, class: g ? "grid" : "axis" });
+      el("text", { x: L - 8, y: y + 4, "text-anchor": "end" }, "£" + g.toLocaleString("en-GB"));
+    });
+    months.forEach(function (m, i) {
+      var x = L + i * slot + (slot - bw) / 2, acc = 0, total = 0, lines = [];
+      cats.forEach(function (c) { total += c.v[i]; });
+      var g = document.createElementNS(ns, "g");
+      g.setAttribute("tabindex", "0");
+      var title = document.createElementNS(ns, "title");
+      cats.forEach(function (c) { lines.push(c.n + " £" + c.v[i].toLocaleString("en-GB")); });
+      title.textContent = m + ": total £" + total.toLocaleString("en-GB") + ". " + lines.join(", ");
+      g.appendChild(title);
+      cats.forEach(function (c) {
+        var h = (c.v[i] / max) * plotH, y = T + plotH - acc - h;
+        var r = document.createElementNS(ns, "rect");
+        r.setAttribute("x", x); r.setAttribute("width", bw);
+        r.setAttribute("y", y + 1); r.setAttribute("height", Math.max(h - 2, 0)); // 2px surface gap
+        r.setAttribute("fill", c.c);
+        g.appendChild(r);
+        acc += h;
+      });
+      svg.appendChild(g);
+      el("text", { x: x + bw / 2, y: H - 8, "text-anchor": "middle" }, m);
+    });
+    var legend = document.getElementById("trend-legend");
+    cats.forEach(function (c) {
+      var s = document.createElement("span");
+      s.className = "cat"; s.style.setProperty("--dot", c.c); s.textContent = c.n;
+      legend.appendChild(s);
+    });
+  })();
+</script>
+</body>
+</html>

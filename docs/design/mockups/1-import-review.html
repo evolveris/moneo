@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup: Import and review (DRAFT)</title>
+<link rel="stylesheet" href="mockup.css">
+<style>
+  .stepper { display: flex; gap: 8px; color: var(--muted); font-size: 13px; }
+  .stepper li { list-style: none; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); }
+  .stepper li[aria-current="step"] { color: var(--text); background: var(--surface-2); }
+  .stepper { padding: 0; margin: 0 0 16px; flex-wrap: wrap; }
+  .dropzone { border: 2px dashed var(--border); border-radius: var(--radius); padding: 40px 16px; text-align: center; display: grid; gap: 8px; justify-items: center; }
+  .sample { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .sample:last-child { border-bottom: 0; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .stat .label { color: var(--muted); font-size: 12.5px; }
+  .stat .value { font-family: var(--font-mono); font-size: 20px; font-variant-numeric: tabular-nums; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filters button { cursor: pointer; }
+  .filters button[aria-pressed="true"] { border-color: var(--accent); }
+  .confirm-bar { position: sticky; bottom: 70px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .balance { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; align-items: end; }
+  .banner-warn { border: 1px solid #6b5410; background: #241e0d; border-radius: var(--radius); padding: 10px 14px; }
+</style>
+</head>
+<body data-initial="source">
+
+<div class="demo-banner demo-only">Demo data only.</div>
+<header class="app-header">
+  <div class="app-header-inner">
+    <a class="logo" href="#">Moneo</a>
+    <nav class="nav" aria-label="Main">
+      <a href="2-transactions-table.html">Transactions</a>
+      <a href="4-insights.html">Insights</a>
+      <a href="1-import-review.html" aria-current="page">Import</a>
+    </nav>
+    <div class="header-actions demo-only">
+      <button class="btn small">Checklist</button>
+      <button class="btn small danger">Reset demo</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="page-head">
+    <div>
+      <h1>Import a statement</h1>
+      <p data-show="source">Choose where the transactions come from. Nothing is saved until you confirm.</p>
+      <p data-show="review all blocked">Check the exceptions, then save. Only rows marked valid are saved.</p>
+    </div>
+  </div>
+
+  <ol class="stepper" aria-label="Import steps">
+    <li data-show="source" aria-current="step">1 Choose source</li>
+    <li data-show="review all blocked">1 Choose source ✓</li>
+    <li data-show="review all blocked" aria-current="step">2 Review</li>
+    <li data-show="source">2 Review</li>
+    <li>3 Saved</li>
+  </ol>
+
+  <!-- STEP 1: the only step that differs between demo and user mode -->
+  <section data-show="source" class="stack" aria-label="Choose source">
+    <div class="card user-only">
+      <div class="dropzone">
+        <h2>Drop a CSV, PDF or receipt photo</h2>
+        <p class="muted">Up to 5 MB, 10 PDF pages or 5,000 rows.</p>
+        <button class="btn primary">Choose a file</button>
+      </div>
+    </div>
+
+    <div class="card demo-only">
+      <h2>Choose a sample file</h2>
+      <p class="muted" style="margin-bottom:8px">Demo mode: your own files can't be uploaded. These samples show every state.</p>
+      <div class="sample">
+        <div><strong>RBS current account, 200 transactions</strong><div class="hint">A clean file. Goes straight to review.</div></div>
+        <button class="btn small primary" data-state-btn="review">Use sample</button>
+      </div>
+      <div class="sample">
+        <div><strong>CSV with bad rows</strong><div class="hint">3 unreadable dates and one EUR row. Shows needs-fix.</div></div>
+        <button class="btn small" data-state-btn="blocked">Use sample</button>
+      </div>
+      <div class="sample">
+        <div><strong>Wrong file type</strong><div class="hint">A .docx file. Rejected before extraction.</div></div>
+        <button class="btn small" disabled>Use sample</button>
+      </div>
+      <div class="sample">
+        <div><strong>Unreadable receipt</strong><div class="hint">A blurry photo. Asks you to retake or discard.</div></div>
+        <button class="btn small" disabled>Use sample</button>
+      </div>
+      <p class="draft-note">Draft: "Wrong file type" and "Unreadable receipt" lead to rejected / failed screens that are not mocked yet.</p>
+    </div>
+  </section>
+
+  <!-- STEP 2: shared by both modes -->
+  <section data-show="review all blocked" class="stack" aria-label="Review">
+
+    <div class="card stack">
+      <div class="stats">
+        <div class="stat"><div class="label">Rows</div><div class="value">4,000</div></div>
+        <div class="stat"><div class="label">Date range</div><div class="value" style="font-size:15px">1 Jan – 31 Dec 2025</div></div>
+        <div class="stat"><div class="label">Money in</div><div class="value">£31,420.00</div></div>
+        <div class="stat"><div class="label">Money out</div><div class="value">−£27,905.40</div></div>
+        <div class="stat"><div class="label">Net</div><div class="value">+£3,514.60</div></div>
+      </div>
+
+      <div class="filters" role="group" aria-label="Filter by row state">
+        <button class="chip valid" aria-pressed="false">Valid · 3,971</button>
+        <button class="chip needs-fix" aria-pressed="false"><span data-show="review all">Needs fix · 0</span><span data-show="blocked">Needs fix · 3</span></button>
+        <button class="chip duplicate" aria-pressed="false">Duplicate · 12</button>
+        <button class="chip unknown" aria-pressed="false">Unknown category · 5</button>
+      </div>
+
+      <details>
+        <summary>Balance check (optional)</summary>
+        <div class="balance" style="margin-top:10px">
+          <label>Opening balance<br><input class="field mono" value="£2,140.12"></label>
+          <label>Closing balance<br><input class="field mono" value="£5,654.72"></label>
+          <div class="chip valid">Matches: opening + net = closing</div>
+        </div>
+        <p class="hint" style="margin-top:8px">If these don't add up you see a warning that rows may be missing or doubled. You can still save.</p>
+      </details>
+    </div>
+
+    <div class="row spread">
+      <div class="row">
+        <div class="segmented" role="group" aria-label="View">
+          <button class="btn small" data-state-btn="review">Exceptions only</button>
+          <button class="btn small" data-state-btn="all">All 4,000 rows</button>
+        </div>
+        <span class="hint" data-show="review blocked">Showing 17 rows that need a look. 3,983 rows are fine and hidden.</span>
+        <span class="hint" data-show="all">Showing all rows (the real table is virtualised).</span>
+      </div>
+      <div class="row">
+        <button class="btn small">Skip all duplicates</button>
+        <button class="btn small">Include all duplicates</button>
+        <button class="btn small">Drop selected</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width:32px"><input type="checkbox" aria-label="Select all"></th>
+            <th>State</th><th>Date</th><th>Description</th><th>Category</th><th class="num">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- needs-fix rows: only when blocked -->
+          <tr class="is-needs-fix" data-show="blocked">
+            <td><input type="checkbox" aria-label="Select row"></td>
+            <td><span class="chip needs-fix">Needs fix</span></td>
+            <td>
+              <input class="field invalid mono" value="31/13/2025" aria-label="Date" aria-invalid="true" aria-describedby="e1" style="width:120px">
+              <div class="error-text" id="e1">Not a real date. Use DD/MM/YYYY.</div>
+            </td>
+            <td>TESCO STORES 3214</td>
+            <td><span class="cat" data-c="groceries">Groceries</span></td>
+            <td class="num amount out">£23.40</td>
+          </tr>
+          <tr class="is-needs-fix" data-show="blocked">
+            <td><input type="checkbox" aria-label="Select row"></td>
+            <td><span class="chip needs-fix">Needs fix</span></td>
+            <td class="mono">04/02/2025</td>
+            <td>
+              AMZN EU MARKETPLACE
+              <div class="error-text">GBP only. This row is in EUR and can't be saved. Drop it.</div>
+            </td>
+            <td><span class="cat" data-c="shopping">Shopping</span></td>
+            <td class="num amount out">€18.99</td>
+          </tr>
+          <tr class="is-duplicate">
+            <td><input type="checkbox" aria-label="Select row"></td>
+            <td><span class="chip duplicate">Duplicate</span> <span class="hint">skipped</span></td>
+            <td class="mono">12 Mar 2025</td>
+            <td>PRET A MANGER 0412</td>
+            <td><span class="cat" data-c="eating">Eating out</span></td>
+            <td class="num amount out">£6.45</td>
+          </tr>
+          <tr class="is-duplicate">
+            <td><input type="checkbox" aria-label="Select row"></td>
+            <td><span class="chip duplicate">Duplicate</span> <span class="hint">skipped</span></td>
+            <td class="mono">12 Mar 2025</td>
+            <td>TFL TRAVEL CH</td>
+            <td><span class="cat" data-c="transport">Transport</span></td>
+            <td class="num amount out">£8.90</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" aria-label="Select row"></td>
+            <td><span class="chip unknown">Unknown category</span></td>
+            <td class="mono">19 Mar 2025</td>
+            <td>SQ *KILN AND CO</td>
+            <td><select class="field" aria-label="Category"><option>Pick a category…</option><option>Eating out</option></select></td>
+            <td class="num amount out">£14.00</td>
+          </tr>
+          <!-- all rows view adds ordinary valid rows -->
+          <tr data-show="all">
+            <td><input type="checkbox" aria-label="Select row"></td>
+            <td><span class="chip valid">Valid</span></td>
+            <td class="mono">01 Jan 2025</td>
+            <td>OCTOPUS ENERGY DD</td>
+            <td><span class="cat" data-c="bills">Bills</span></td>
+            <td class="num amount out">£84.20</td>
+          </tr>
+          <tr data-show="all">
+            <td><input type="checkbox" aria-label="Select row"></td>
+            <td><span class="chip valid">Valid</span></td>
+            <td class="mono">02 Jan 2025</td>
+            <td>TESCO STORES 3214</td>
+            <td><span class="cat" data-c="groceries">Groceries</span></td>
+            <td class="num amount out">£41.07</td>
+          </tr>
+          <tr data-show="all">
+            <td><input type="checkbox" aria-label="Select row"></td>
+            <td><span class="chip valid">Valid</span></td>
+            <td class="mono">03 Jan 2025</td>
+            <td>SALARY ACME LTD</td>
+            <td><span class="cat" data-c="none">Income</span></td>
+            <td class="num amount in">£2,480.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="confirm-bar">
+      <div>
+        <strong data-show="review all">Save 3,983 transactions</strong>
+        <strong data-show="blocked">Can't save yet</strong>
+        <div class="hint" data-show="review all">12 duplicates skipped · 5 saved as uncategorised unless you pick a category.</div>
+        <div class="error-text" data-show="blocked">3 rows need fixing before you can save. Fix or drop them.</div>
+      </div>
+      <div class="row">
+        <button class="btn">Cancel</button>
+        <button class="btn primary" data-show="review all">Save 3,983 transactions</button>
+        <button class="btn primary" data-show="blocked" disabled aria-disabled="true">Save transactions</button>
+      </div>
+    </div>
+
+    <p class="draft-note">Draft decisions shown: exceptions-first view (D-003), state chips with icon + label so colour is never the only signal, confirm button states exactly what will be saved, disabled with the reason when rows need fixing, click-to-edit cells validated on commit (D-034).</p>
+  </section>
+</main>
+
+<div class="mockup-bar">
+  <span class="label">Mockup state:</span>
+  <button data-state-btn="source">1 Choose source</button>
+  <button data-state-btn="review">2 Review (exceptions)</button>
+  <button data-state-btn="all">2 Review (all rows)</button>
+  <button data-state-btn="blocked">2 Review (needs-fix blocks save)</button>
+  <span class="sep"></span>
+  <button id="demo-toggle" aria-pressed="true">Demo layer: on (demo mode)</button>
+</div>
+<script src="mockup.js"></script>
+</body>
+</html>
