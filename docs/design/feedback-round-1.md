@@ -40,3 +40,31 @@ Author's feedback on the draft mockups in `docs/design/mockups/`. Round 2 is exp
 
 - Record decisions for the SPEC items (1, 3, 8, 14) as D-037 onwards, with the author's answers.
 - Apply the changes to the mockups after round 2 arrives.
+
+## Round 1b: decisions and further feedback
+
+Author's answers. Still not applied to the mockups or the SPEC; the SPEC items are batched and written as D-037 onwards once round 2 is in.
+
+### Decisions on the SPEC items
+
+- **Item 1 (missing category): decided.** Saving is blocked while any row has no category. The row keeps its "? Unknown category" flag and counts as needs-fix, and "Save transactions" is disabled until every row has a category. Replaces D-012/D-020's "unknown does not block saving", so J5, the scenario "Unknown stays uncategorised" and the `uncategorised` category source need rewriting. To settle when writing it up: the demo data (J9) still needs some way to show uncategorised rows, and the "partial" view state may no longer occur.
+- **Item 3 (tab order): decided.** Insights, Transactions, Import. To be added to the SPEC as a navigation rule, to be used when the screens are built in code.
+- **Item 8 (reset): decided.** Reset wipes the whole visitor copy, from any screen, and the app returns to Import on "Choose source". Same behaviour on Transactions, Insights and Import (item 17).
+- **Item 14 (mood by category chart): dropped for now.** No change to the Insights mockup, and nothing added to J8.
+
+### New and changed feedback
+
+- **Remove the "Checklist" button** from the header. The author sees no checklist panel in the mockups and does not understand the button. Open: does this remove only the button, or the whole guided demo (SPEC J9, D-027, D-029)? Until answered, J9 is unchanged in the SPEC.
+- **Context tags (item 10), two sample transactions in the Transactions mockup:**
+  1. mood "happy", motivation "impulse": tags on the row and a "View context" link opening a dialog.
+  2. mood "sad": tag on the row and a "View details" link opening a dialog with the extra information added (note, motivation, outcome).
+  Open: one label for the link ("View context" or "View details") or both?
+- **Editing:** click to edit inline, confirmed (D-034, ADR-001 open decision 18). A spike still verifies it at 5,000 rows.
+
+### Lists (D-023 updated)
+
+- **Mood:** unchanged: happy, stressed, bored, sad, anxious, excited, calm, tired.
+- **Motivation:** need, planned, habit, impulse, treat, social pressure, deal or sale, social media, unwell (feeling under the weather, or buying for health reasons).
+- **Outcome:** glad I bought it, regret it, used it, unused, returned, sold.
+- **Categories:** the author's message said "categories:" and then nothing. Still waiting for the list (or the choice to have one proposed).
+- The mockup text said "impulse buying"; the list value is "impulse". Using the list value.
