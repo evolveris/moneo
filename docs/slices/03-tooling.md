@@ -1,9 +1,9 @@
 # Slice 03: Tooling
 
-- Status: plan written, answers recorded, waiting for approval
+- Status: in review
 - Journeys: none (foundation)
 - Depends on: slice 02 (merged)
-- Branch / PR: `slice-03-tooling` / not opened yet
+- Branch / PR: `slice-03-tooling` / see the pull request
 
 ## Goal
 
