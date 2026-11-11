@@ -331,9 +331,9 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 ## D-042: Fixed lists: categories, motivation and outcome
 
 - Journey: J6, J7, J8
-- Status: decided (lists); open (chart colours)
+- Status: decided
 - Answer: Spending categories: Groceries, Eating out, Transport, Housing, Bills and utilities, Subscriptions, Shopping, Health and fitness, Other; plus Income and Transfers, which stay out of the spending charts (D-006). Entertainment and Travel were considered and dropped. Mood is unchanged (happy, stressed, bored, sad, anxious, excited, calm, tired). Motivation: need, planned, habit, impulse, treat, social pressure, deal or sale, social media, unwell (feeling under the weather, or buying for health reasons). Outcome: glad I bought it, regret it, used it, unused, returned, sold. The lists are fixed in code (D-002).
-- Open: with 9 spending categories and six validated chart colours, the draft mockups show the six biggest and group the rest as "Smaller categories", with all categories in the table view. The author has not confirmed this.
+- Chart colours: every category has its own colour, not grouped. Eight hues in a fixed slot order (blue, orange, aqua, yellow, magenta, green, violet, red) for the eight categories, and grey for Other, so a category keeps its colour in every chart. Checked with the dataviz palette validator on the dark surface: lightness, chroma, contrast and the adjacent-pair colour-blind and normal-vision checks pass (worst adjacent colour-blind difference 8.4). Some non-adjacent pairs (for example magenta and aqua under deuteranopia) are hard to tell apart, so every mark carries a direct label or value and each chart has a legend and a table view.
 - Affects: SPEC fixed lists, J6, J7, J8; supersedes the starter lists in D-023 and the "mood list still to be drafted" in D-002
 
 ## D-043: Context in the transaction table

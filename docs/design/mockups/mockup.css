@@ -23,14 +23,18 @@
   --serious: #ec835a;
   --critical: #d03b3b;
 
-  /* categories, fixed order, validated on the dark surface */
+  /* categories: eight hues in fixed slot order + grey for Other, validated on the dark surface
+     (dataviz validate_palette.js, dark mode: all checks pass; worst adjacent CVD delta E 8.4,
+     so direct labels, values and a table view are always present). Colour follows the category. */
   --c-groceries: #3987e5;
   --c-eating: #d95926;
   --c-transport: #199e70;
   --c-bills: #c98500;
   --c-shopping: #d55181;
   --c-subs: #008300;
-  --c-none: #6b6a63; /* categories without their own colour, and "Smaller categories" */
+  --c-housing: #9085e9;
+  --c-health: #e66767;
+  --c-none: #6b6a63; /* Other, Income, Transfers and "No context": neutral on purpose */
 
   /* context tags: tinted per kind, always with a text label */
   --tag-mood: #2c2447;
@@ -156,6 +160,8 @@ a.btn.danger { color: #f2a0a0; }
 .cat[data-c="bills"] { --dot: var(--c-bills); }
 .cat[data-c="shopping"] { --dot: var(--c-shopping); }
 .cat[data-c="subs"] { --dot: var(--c-subs); }
+.cat[data-c="housing"] { --dot: var(--c-housing); }
+.cat[data-c="health"] { --dot: var(--c-health); }
 .cat[data-c="none"] { color: var(--text-2); }
 
 /* ---------- table ---------- */

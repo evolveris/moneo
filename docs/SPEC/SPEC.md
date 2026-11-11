@@ -494,7 +494,7 @@ Feature: Charts
 
 Edge cases:
 - Refunds net against the category in which they occurred. (D-033)
-- **[Proposed]** With nine spending categories and only six chart colours that are validated on the dark surface, the charts show the six biggest categories and group the rest as "Smaller categories"; the table view lists every category (D-042).
+- Every spending category has its own colour: eight hues in a fixed order, plus grey for Other, and a category keeps its colour in every chart. Labels, values and a table view are always present so colour is never the only signal (D-042).
 - A month is a calendar month (D-025); pay-cycle months are a later option.
 - A month with only income: spending chart is empty with an explanation.
 - Very large single transaction (for example a mortgage payment) dominates the chart: a category filter lets the user hide that category from the view.
@@ -651,7 +651,6 @@ Every decision made while writing this section is recorded in `SPEC-DECISIONS.md
 
 Open from the first design review (see `SPEC-DECISIONS.md`):
 - How a dismissed demo checklist is reopened, if at all (D-041).
-- How the charts show nine spending categories with six validated colours (D-042).
 - The landing page when the app has no data, and where "Load demo data" lands (D-039).
 - Whether future dates are allowed, perhaps only for scheduled direct debits (D-047).
 

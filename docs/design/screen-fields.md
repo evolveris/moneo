@@ -96,7 +96,7 @@ Each of the three is a pick from its fixed list. **Mood and motivation are requi
 - **Behaviour:** for the chosen field, spending total and count per value, plus "No context". Coverage: "N% of spending (£x of £y) has context". The biggest spending transactions without context, each with "Add context".
 - **By category:** for the chosen month, total and share per category, with a table view.
 - **12-month trend:** for the last 12 calendar months, total per month stacked by category, with a table view.
-- Chart colour rule (open): top 5 or 6 categories plus "Other", or more colours.
+- Chart colours: every category has its own colour (eight hues in a fixed order, grey for Other), with labels, values and a table view so colour is never the only signal (D-042).
 
 ### Header and app level
 

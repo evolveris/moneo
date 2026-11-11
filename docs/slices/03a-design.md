@@ -52,7 +52,7 @@ None are made to pass. No application code changes. This slice settles open prod
 
 ## Open questions
 
-All seven original questions are answered (see below). What is still open after the first design review is listed in the SPEC under "Still open": how a dismissed demo checklist is reopened, how the charts show nine categories with six colours, the landing page when there is no data, and future dates.
+All seven original questions are answered (see below). What is still open after the first design review is listed in the SPEC under "Still open": how a dismissed demo checklist is reopened, the landing page when there is no data, and future dates.
 
 ## What slice 04 must contain
 
@@ -86,7 +86,7 @@ Decisions from the first design review, all logged in `SPEC-DECISIONS.md` and ap
 - D-039: reset wipes everything and lands on Import, "Choose source".
 - D-040: the mood-by-category chart is deferred.
 - D-041: the header "Checklist" button is removed (reopening still open).
-- D-042: the fixed lists.
+- D-042: the fixed lists, and one colour per category in the charts (eight hues plus grey for Other, validated).
 - D-043: context tags with a "View context" dialog.
 - D-044: mood and motivation are required to save context; no partial state.
 - D-045: note limit of 200 characters.

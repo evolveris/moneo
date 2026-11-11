@@ -140,9 +140,9 @@
           <div class="bar-value">£640.00</div>
         </div>
         <div class="bar-row clickable" role="listitem">
-          <div class="bar-label"><span class="cat" data-c="bills">Bills and utilities</span></div>
-          <div class="bar-track"><div class="bar-fill" style="width:95.3%; --fill:var(--c-bills)"></div></div>
-          <div class="bar-value">£610.00</div>
+          <div class="bar-label"><span class="cat" data-c="housing">Housing</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:56.3%; --fill:var(--c-housing)"></div></div>
+          <div class="bar-value">£360.00</div>
         </div>
         <div class="bar-row clickable" role="listitem">
           <div class="bar-label"><span class="cat" data-c="eating">Eating out</span></div>
@@ -155,6 +155,11 @@
           <div class="bar-value">£290.00</div>
         </div>
         <div class="bar-row clickable" role="listitem">
+          <div class="bar-label"><span class="cat" data-c="bills">Bills and utilities</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:39.1%; --fill:var(--c-bills)"></div></div>
+          <div class="bar-value">£250.00</div>
+        </div>
+        <div class="bar-row clickable" role="listitem">
           <div class="bar-label"><span class="cat" data-c="transport">Transport</span></div>
           <div class="bar-track"><div class="bar-fill" style="width:32.8%; --fill:var(--c-transport)"></div></div>
           <div class="bar-value">£210.00</div>
@@ -165,11 +170,16 @@
           <div class="bar-value">£120.00</div>
         </div>
         <div class="bar-row clickable" role="listitem">
-          <div class="bar-label"><span class="cat" data-c="none">Smaller categories</span></div>
-          <div class="bar-track"><div class="bar-fill" style="width:12.5%; --fill:var(--c-none)"></div></div>
-          <div class="bar-value">£80.00</div>
+          <div class="bar-label"><span class="cat" data-c="health">Health and fitness</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:7.8%; --fill:var(--c-health)"></div></div>
+          <div class="bar-value">£50.00</div>
         </div>
-        <p class="hint">The six biggest categories get their own colour; the rest are grouped as "Smaller categories" (here Health and fitness £50 and Other £30). Click any bar to see its transactions. Switch to the table to see every category.</p>
+        <div class="bar-row clickable" role="listitem">
+          <div class="bar-label"><span class="cat" data-c="none">Other</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:4.7%; --fill:var(--c-none)"></div></div>
+          <div class="bar-value">£30.00</div>
+        </div>
+        <p class="hint">Every category has its own colour. Click a bar to see its transactions. Switch to the table for the exact shares.</p>
       </div>
 
       <div data-show="category-table" class="table-wrap">
@@ -177,14 +187,14 @@
           <thead><tr><th>Category</th><th class="num">Spent</th><th class="num">Share</th></tr></thead>
           <tbody>
             <tr><td>Groceries</td><td class="num mono">£640.00</td><td class="num mono">28%</td></tr>
-            <tr><td>Bills and utilities</td><td class="num mono">£610.00</td><td class="num mono">27%</td></tr>
+            <tr><td>Housing</td><td class="num mono">£360.00</td><td class="num mono">16%</td></tr>
             <tr><td>Eating out</td><td class="num mono">£340.00</td><td class="num mono">15%</td></tr>
             <tr><td>Shopping</td><td class="num mono">£290.00</td><td class="num mono">13%</td></tr>
+            <tr><td>Bills and utilities</td><td class="num mono">£250.00</td><td class="num mono">11%</td></tr>
             <tr><td>Transport</td><td class="num mono">£210.00</td><td class="num mono">9%</td></tr>
             <tr><td>Subscriptions</td><td class="num mono">£120.00</td><td class="num mono">5%</td></tr>
             <tr><td>Health and fitness</td><td class="num mono">£50.00</td><td class="num mono">2%</td></tr>
             <tr><td>Other</td><td class="num mono">£30.00</td><td class="num mono">1%</td></tr>
-            <tr><td>Housing</td><td class="num mono">£0.00</td><td class="num mono">0%</td></tr>
           </tbody>
         </table>
       </div>
@@ -212,7 +222,7 @@
     </div>
   </section>
 
-  <p class="draft-note">Decisions shown: Behaviour is the first tab because it is where most time will be spent (D-038); horizontal bars for category (labels and values sit next to every bar, so nothing depends on colour); a "view as table" for every chart; income kept out of the spending chart; "No context" shown as an honest group; the coverage box links to the prompts below with "Add more context". Draft assumption, not decided: with 9 spending categories and only six validated chart colours, the charts show the six biggest and group the rest as "Smaller categories", and the table lists all of them. Chart colours were validated for the dark surface with the dataviz palette checker (colour-blind separation is in the 8.4 to 8.7 band, so direct labels and the legend are required, and are present).</p>
+  <p class="draft-note">Decisions shown: Behaviour is the first tab because it is where most time will be spent (D-038); horizontal bars for category (labels and values sit next to every bar, so nothing depends on colour); a "view as table" for every chart; income kept out of the spending chart; "No context" shown as an honest group; the coverage box links to the prompts below with "Add more context". Each of the 9 spending categories has its own colour (D-042): eight hues in a fixed order plus grey for Other, so a category keeps its colour in every chart. The palette was validated for the dark surface with the dataviz palette checker (all checks pass; colour-blind separation is in the 8.4 to 8.7 band, so direct labels, values, the legend and a table view are required, and are present).</p>
 </main>
 
 <div class="mockup-bar">
@@ -234,12 +244,14 @@
     var months = ["Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov"];
     var cats = [
       { n: "Groceries", c: "var(--c-groceries)", v: [610, 580, 560, 620, 590, 600, 570, 640, 610, 600, 620, 640] },
-      { n: "Bills and utilities", c: "var(--c-bills)", v: [600, 600, 610, 610, 600, 610, 610, 610, 600, 610, 610, 610] },
       { n: "Eating out", c: "var(--c-eating)", v: [420, 260, 240, 300, 310, 330, 380, 360, 300, 320, 330, 340] },
-      { n: "Shopping", c: "var(--c-shopping)", v: [520, 140, 120, 200, 180, 210, 190, 260, 240, 230, 270, 290] },
       { n: "Transport", c: "var(--c-transport)", v: [180, 190, 170, 200, 210, 190, 200, 220, 210, 200, 200, 210] },
+      { n: "Bills and utilities", c: "var(--c-bills)", v: [240, 240, 250, 250, 240, 250, 250, 250, 240, 250, 250, 250] },
+      { n: "Shopping", c: "var(--c-shopping)", v: [520, 140, 120, 200, 180, 210, 190, 260, 240, 230, 270, 290] },
       { n: "Subscriptions", c: "var(--c-subs)", v: [150, 90, 80, 100, 110, 120, 140, 130, 110, 100, 110, 120] },
-      { n: "Smaller categories", c: "var(--c-none)", v: [90, 70, 60, 80, 70, 60, 90, 80, 70, 80, 90, 80] }
+      { n: "Housing", c: "var(--c-housing)", v: [360, 360, 360, 360, 360, 360, 360, 360, 360, 360, 360, 360] },
+      { n: "Health and fitness", c: "var(--c-health)", v: [40, 50, 30, 60, 40, 50, 50, 60, 40, 50, 50, 50] },
+      { n: "Other", c: "var(--c-none)", v: [40, 30, 20, 40, 30, 20, 40, 30, 30, 30, 40, 30] }
     ];
     var W = 760, H = 290, L = 48, R = 8, T = 10, B = 28;
     var plotW = W - L - R, plotH = H - T - B, max = 3000;
