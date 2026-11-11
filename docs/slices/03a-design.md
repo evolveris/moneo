@@ -85,7 +85,8 @@ Decisions from the first design review, all logged in `SPEC-DECISIONS.md` and ap
 - D-038: tab order Insights, Transactions, Import; Insights sections Behaviour, By category, 12-month trend.
 - D-039: reset wipes everything and lands on Import, "Choose source".
 - D-040: the mood-by-category chart is deferred.
-- D-041: the header "Checklist" button is removed (reopening still open).
+- D-041 and D-049: the header "Checklist" button and the checklist panel are replaced by "Start import demo" (no data) or "Reset demo" (has data).
+- D-050: a Saved screen after an import, with a "See your insights" button.
 - D-042: the fixed lists, and one colour per category in the charts (eight hues plus grey for Other, validated).
 - D-043: context tags with a "View context" dialog.
 - D-044: mood and motivation are required to save context; no partial state.

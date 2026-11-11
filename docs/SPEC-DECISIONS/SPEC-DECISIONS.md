@@ -324,8 +324,8 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 ## D-041: Remove the header "Checklist" button
 
 - Journey: J9
-- Status: decided (button); open (reopening)
-- Answer: The header button is removed. The guided demo checklist itself (D-027, D-029) stays. Still open: how a dismissed checklist is reopened, or whether it is not. The SPEC marks the reopen behaviour [Proposed] until the author answers.
+- Status: decided; superseded in part by D-049
+- Answer: The header "Checklist" button is removed. The author did not understand it, and the checklist panel was never mocked. See D-049 for what replaces it.
 - Affects: SPEC J9
 
 ## D-042: Fixed lists: categories, motivation and outcome
@@ -377,3 +377,18 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 - Status: decided
 - Answer: Icons on the tabs and in the import step indicator, with arrows between steps instead of numbers. Accent touches (a gradient logo mark, a gradient line under the header, accent on the active tab) because the design felt bland. Logo at 30px. A "Project repo" link with the GitHub icon to the right of "Reset demo". Click-to-edit cells in the table (D-034). The card layout on narrow screens is kept for the transaction screens. All colours are still placeholders.
 - Affects: the mockups; later the UI slices
+
+## D-049: "Start import demo" replaces the demo checklist (supersedes D-027 and D-029)
+
+- Journey: J9, J10, J1
+- Status: decided
+- Question: The checklist panel (D-027, D-029) was never mocked, the header button to reopen it was not understood, and closing it left no way back. What should guide a demo visitor?
+- Answer: Drop the checklist panel. Instead the header has one demo action that depends on whether the visitor has data. With no data (a first visit, or after a reset) it shows "Start import demo", which goes to the Import page, "Choose source". Once there is data it shows "Reset demo" instead, so the visitor never sees both. The "try a bad file" samples stay in the sample picker on Import. Nothing in user mode.
+- Affects: SPEC J9 (rewritten), J10, mockups; slice 15 (no checklist to build)
+
+## D-050: Saved screen after an import
+
+- Journey: J5
+- Status: decided
+- Answer: After a successful save the Import page shows a "Saved" step: the number saved, skipped as duplicates and dropped, the date range, and a primary button "See your insights" that opens Insights, with "View transactions" and "Import another" as secondary actions.
+- Affects: SPEC J5, mockups

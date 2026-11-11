@@ -33,7 +33,7 @@
   .prompt-row:last-child { border-bottom: 0; }
 </style>
 </head>
-<body data-initial="behaviour-mood">
+<body data-initial="behaviour-mood" data-empty-states="empty">
 
 <div class="demo-banner demo-only">Demo data only.</div>
 <div id="app-header" data-page="insights"></div>
@@ -46,11 +46,21 @@
     </div>
   </div>
 
-  <div class="tabs" role="group" aria-label="Insight views">
+  <div class="tabs" role="group" aria-label="Insight views" data-show="behaviour-mood behaviour-why behaviour-out category category-table filtered trend">
     <button data-state-btn="behaviour-mood">Behaviour</button>
     <button data-state-btn="category">By category</button>
     <button data-state-btn="trend">12-month trend</button>
   </div>
+
+  <!-- ===== Empty ===== -->
+  <section data-show="empty" class="card state-panel" aria-label="No data yet">
+    <h2>Nothing to show yet</h2>
+    <p>Import a statement to see where your money goes, and why.</p>
+    <div class="row" style="justify-content:center">
+      <a class="btn primary demo-only" href="4-insights.html" style="text-decoration:none">Load demo data</a>
+      <a class="btn" href="1-import-review.html">Import a statement</a>
+    </div>
+  </section>
 
   <!-- ===== Behaviour ===== -->
   <section data-show="behaviour-mood behaviour-why behaviour-out" class="stack">
@@ -234,6 +244,7 @@
   <button data-state-btn="category-table">Category (table view)</button>
   <button data-state-btn="filtered">Month with no spending</button>
   <button data-state-btn="trend">12-month trend</button>
+  <button data-state-btn="empty">Empty (no data yet)</button>
   <span class="sep"></span>
   <button id="demo-toggle" aria-pressed="true">Demo layer: on (demo mode)</button>
 </div>

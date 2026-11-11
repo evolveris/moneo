@@ -314,6 +314,7 @@ Applies to J2, J3 and J4.
 - **Editing**: any row's date, amount and description can be edited in the table, as click-to-edit cells validated on commit (D-034, ADR-001 open decision 18).
 - **Bulk actions**: skip all duplicates, include all duplicates, drop selected rows.
 - **Categories are assigned before review** (D-012). The AI must pick a category from the fixed list or answer "unknown" (D-020). A row with an unknown category is flagged "? Unknown category" and cannot be saved until the user picks a category in review or drops the row (D-037).
+- **Saved screen**: after a successful save the Import page shows the "Saved" step with the number saved, the number skipped as duplicates, the number dropped and the date range, and a primary button "See your insights" (plus "View transactions" and "Import another"). (D-050)
 - **Confirm button**: states what will be saved ("Save 3,812 transactions"). Disabled while any row is `needs-fix`, while any row has no category, or when there are zero valid rows, with the reason shown.
 
 ```gherkin
@@ -347,6 +348,12 @@ Feature: Review before saving
     When I remove a row from review
     Then it is not saved
     And it is counted as skipped in the summary
+
+  Scenario: Saved screen
+    Given I confirmed an import of 3,988 rows with 12 skipped duplicates
+    Then I see the Saved step with "3,988 transactions saved" and "12 skipped as duplicates"
+    And I can choose "See your insights", which opens Insights
+    And I can choose "View transactions" or "Import another"
 
   Scenario: Cancel
     When I choose cancel
@@ -501,30 +508,27 @@ Edge cases:
 - Pence rounding: totals are sums of integers, formatted only at display.
 - Timezone: transaction dates are calendar dates with no time, so no timezone shifting between months.
 
-#### J9. Guided demo (Demo user)
+#### J9. Start the demo (Demo user)
 
-Demo mode only; in user mode there is no checklist (D-009, D-029). The guided demo is a checklist panel, not overlays on the screen (D-027).
+Demo mode only; in user mode there is no demo button (D-009). The guided demo is one header button, not a checklist panel or overlays (D-049, which replaces D-027 and D-029).
 
 ```gherkin
 Feature: Demo workflow
 
-  Scenario: Checklist appears for a first-time visitor
+  Scenario: A first-time visitor is invited to start
     Given demo mode is on
-    And I have no visitor cookie yet
+    And I have no data yet
     When I open the app
-    Then the demo checklist is shown
-    And I can dismiss it
-    And **[Proposed]** a dismissed checklist stays dismissed for my visit and comes back after a reset (there is no header button, D-041)
+    Then the header shows "Start import demo" instead of "Reset demo"
+    When I choose "Start import demo"
+    Then I go to Import, "Choose source"
 
-  Scenario: Work through the checklist in any order
-    Given the checklist is open
-    Then it lists: "Load demo data", "See your charts", "Add context to a purchase", "Try an import", "Try a bad file"
-    And each item links to the right place
-    And an item ticks when I have done it
-    And my ticks are kept for my visitor session
+  Scenario: The button becomes Reset once there is data
+    Given I have loaded demo data or saved an import
+    Then the header shows "Reset demo" and no longer shows "Start import demo"
 
   Scenario: Try a bad file
-    When I open "Try a bad file"
+    Given I am on Import, "Choose source", in demo mode
     Then I can pick sample files: a CSV with bad rows, a wrong file type, an oversized file, and an unreadable receipt
     And each shows the correct rejected, needs-fix or failed state
 
@@ -533,9 +537,9 @@ Feature: Demo workflow
     Then some transactions have no context
     So I can see what the prompts to add context look like
 
-  Scenario: No checklist in user mode
+  Scenario: No demo button in user mode
     Given demo mode is off
-    Then the checklist is not shown
+    Then neither "Start import demo" nor "Reset demo" is shown
 ```
 
 Edge cases:
@@ -553,7 +557,7 @@ Demo mode only. Reset is not offered in user mode, because it would delete real 
 Feature: Reset
 
   Scenario: Reset with confirmation
-    Given I am in demo mode and the app is populated
+    Given I am in demo mode and I have data
     When I choose "Reset demo"
     Then I am asked to confirm and told that my demo data will be deleted
     When I confirm
@@ -569,6 +573,10 @@ Feature: Reset
     Given I have not used the app for 24 hours
     Then my demo copy is deleted
     And my next visit shows the empty state (Import, "Choose source")
+
+  Scenario: Nothing to reset yet
+    Given I have no data
+    Then the header shows "Start import demo" instead of "Reset demo" (J9)
 
   Scenario: No reset in user mode
     Given demo mode is off
@@ -650,7 +658,6 @@ Every decision made while writing this section is recorded in `SPEC-DECISIONS.md
 ### Still open
 
 Open from the first design review (see `SPEC-DECISIONS.md`):
-- How a dismissed demo checklist is reopened, if at all (D-041).
 - The landing page when the app has no data, and where "Load demo data" lands (D-039).
 - Whether future dates are allowed, perhaps only for scheduled direct debits (D-047).
 

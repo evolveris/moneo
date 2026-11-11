@@ -25,7 +25,7 @@ A slice's detailed plan (`NN-name.md`, from `_template.md`) is written only when
 | 12 | Charts: category, 12-month trend, behaviour | J8 | planned |
 | 13 | PDF import | J3 | planned |
 | 14 | Receipt import | J4 | planned |
-| 15 | Demo mode: checklist, sample picker, bad files, limits, reset, expiry | J9, J10 | planned |
+| 15 | Demo mode: start button, sample picker, bad files, limits, reset, expiry | J9, J10 | planned |
 
 J11 (two of us) waits for auth and is not sliced yet.
 

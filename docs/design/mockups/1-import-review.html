@@ -20,7 +20,7 @@
   .banner-warn { border: 1px solid #6b5410; background: #241e0d; border-radius: var(--radius); padding: 10px 14px; }
 </style>
 </head>
-<body data-initial="source">
+<body data-initial="source" data-empty-states="source">
 
 <div class="demo-banner demo-only">Demo data only.</div>
 <div id="app-header" data-page="import"></div>
@@ -31,17 +31,20 @@
       <h1>Import a statement</h1>
       <p data-show="source">Choose where the transactions come from. Nothing is saved until you confirm.</p>
       <p data-show="review all blocked ready">Check the exceptions, then save. Every row needs a category, and only rows marked valid are saved.</p>
+      <p data-show="saved">Your transactions are saved.</p>
     </div>
   </div>
 
   <ol class="stepper" aria-label="Import steps">
     <li class="step" aria-current="step" data-show="source"><span class="step-icon"><svg class="icon"><use href="#i-upload"/></svg></span>Choose source</li>
-    <li class="step done" data-show="review all blocked ready"><span class="step-icon"><svg class="icon"><use href="#i-saved"/></svg></span>Choose source</li>
+    <li class="step done" data-show="review all blocked ready saved"><span class="step-icon"><svg class="icon"><use href="#i-saved"/></svg></span>Choose source</li>
     <li class="arrow" aria-hidden="true"><svg class="icon"><use href="#i-arrow"/></svg></li>
     <li class="step" aria-current="step" data-show="review all blocked ready"><span class="step-icon"><svg class="icon"><use href="#i-review"/></svg></span>Review</li>
+    <li class="step done" data-show="saved"><span class="step-icon"><svg class="icon"><use href="#i-saved"/></svg></span>Review</li>
     <li class="step" data-show="source"><span class="step-icon"><svg class="icon"><use href="#i-review"/></svg></span>Review</li>
     <li class="arrow" aria-hidden="true"><svg class="icon"><use href="#i-arrow"/></svg></li>
-    <li class="step"><span class="step-icon"><svg class="icon"><use href="#i-saved"/></svg></span>Saved</li>
+    <li class="step" data-show="source review all blocked ready"><span class="step-icon"><svg class="icon"><use href="#i-saved"/></svg></span>Saved</li>
+    <li class="step" aria-current="step" data-show="saved"><span class="step-icon"><svg class="icon"><use href="#i-saved"/></svg></span>Saved</li>
   </ol>
 
   <!-- STEP 1: the only step that differs between demo and user mode -->
@@ -244,11 +247,32 @@
       <div class="row">
         <button class="btn">Cancel</button>
         <button class="btn primary" data-show="review all blocked" disabled aria-disabled="true">Save transactions</button>
-        <button class="btn primary" data-show="ready">Save 3,988 transactions</button>
+        <button class="btn primary" data-show="ready" data-state-btn="saved">Save 3,988 transactions</button>
       </div>
     </div>
 
     <p class="draft-note">Decisions shown: exceptions-first view (D-003), state chips with icon + label so colour is never the only signal, a row with no category keeps its "? Unknown category" flag and blocks saving (D-037), the confirm button states what will be saved and is disabled with the reason, click-to-edit cells validated on commit (D-034), the step indicator uses icons and arrows. In demo mode the first step also offers "Load demo data", which is where a reset lands (D-039).</p>
+  </section>
+
+  <!-- STEP 3: saved -->
+  <section data-show="saved" class="stack" aria-label="Saved">
+    <div class="card saved-card" role="status">
+      <div class="saved-mark"><svg class="icon"><use href="#i-saved"/></svg></div>
+      <h2>3,988 transactions saved</h2>
+      <p class="muted">Everything is in your data now. Your charts are up to date.</p>
+      <div class="saved-facts">
+        <div class="stat"><div class="label">Saved</div><div class="value">3,988</div></div>
+        <div class="stat"><div class="label">Skipped as duplicates</div><div class="value">12</div></div>
+        <div class="stat"><div class="label">Dropped by you</div><div class="value">0</div></div>
+        <div class="stat"><div class="label">Date range</div><div class="value" style="font-size:15px">1 Jan – 31 Dec 2025</div></div>
+      </div>
+      <div class="row" style="justify-content:center">
+        <a class="btn primary" href="4-insights.html">See your insights</a>
+        <a class="btn" href="2-transactions-table.html">View transactions</a>
+        <button class="btn" data-state-btn="source">Import another</button>
+      </div>
+      <p class="hint">Most of your time will be spent in Insights. Add context to your biggest purchases there to see the why behind them.</p>
+    </div>
   </section>
 </main>
 
@@ -259,6 +283,7 @@
   <button data-state-btn="all">2 Review (all rows)</button>
   <button data-state-btn="blocked">2 Review (needs-fix + no category)</button>
   <button data-state-btn="ready">2 Review (ready to save)</button>
+  <button data-state-btn="saved">3 Saved</button>
   <span class="sep"></span>
   <button id="demo-toggle" aria-pressed="true">Demo layer: on (demo mode)</button>
 </div>

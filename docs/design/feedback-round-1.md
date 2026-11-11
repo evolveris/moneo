@@ -68,3 +68,9 @@ Author's answers. Still not applied to the mockups or the SPEC; the SPEC items a
 - **Outcome:** glad I bought it, regret it, used it, unused, returned, sold.
 - **Spending categories (decided):** Groceries, Eating out, Transport, Housing (rent, mortgage), Bills and utilities, Subscriptions, Shopping, Health and fitness, Other, plus Income and Transfers, which stay out of the spending charts (D-006). Entertainment and Travel were dropped from the proposal. 9 spending categories, 11 in total. Decided afterwards: every category gets its own colour (D-042).
 - The mockup text said "impulse buying"; the list value is "impulse". Using the list value.
+
+### Round 1c
+
+- **Checklist replaced (D-049):** no checklist panel. The header shows "Start import demo" (goes to Import, "Choose source") while the visitor has no data, and "Reset demo" once there is data.
+- **Saved screen (D-050):** added to Import, with a "See your insights" button.
+- **Chart colours (D-042):** every category gets its own colour.

@@ -121,6 +121,7 @@ main { max-width: 1120px; margin: 0 auto; padding: 24px 16px; }
 .btn:hover { border-color: var(--muted); }
 a.btn { text-decoration: none; display: inline-block; }
 a.btn.danger { color: #f2a0a0; }
+a.btn:not(.primary):not(.danger) { color: var(--text); }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
 .btn.danger { border-color: var(--critical); color: #f2a0a0; }
 .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
@@ -205,6 +206,14 @@ tr.is-duplicate td { color: var(--text-2); }
 .mockup-bar button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .mockup-bar .sep { flex: 1; }
 .draft-note { color: var(--muted); font-size: 12.5px; margin-top: 12px; }
+
+/* header demo action: Start import demo (no data yet) or Reset demo (there is data) */
+body[data-data="none"] #reset-demo { display: none; }
+body:not([data-data="none"]) #start-demo { display: none; }
+.saved-card { text-align: center; padding: 40px 16px; display: grid; gap: 12px; justify-items: center; }
+.saved-mark { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: #12361b; color: var(--good); }
+.saved-mark .icon { width: 30px; height: 30px; }
+.saved-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; width: 100%; max-width: 560px; margin: 8px 0; text-align: left; }
 
 /* ---------- stepper with icons ---------- */
 .stepper { display: flex; align-items: center; gap: 8px; padding: 0; margin: 0 0 16px; flex-wrap: wrap; list-style: none; color: var(--muted); font-size: 13.5px; }
