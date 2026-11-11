@@ -1,6 +1,6 @@
 # Screen fields (draft for validation)
 
-What each screen reads and writes, drawn from the SPEC (D-002, D-006, D-012, D-022, D-023, D-034, D-035) and the draft mockups, plus the round 1 feedback in `feedback-round-1.md`. This is the input for the Zod schemas in slice 04. **Proposed**: nothing here is final until the author has checked it.
+What each screen reads and writes, drawn from the SPEC (D-002, D-006, D-012, D-022, D-023, D-034, D-035) and the draft mockups, plus the round 1 feedback in `feedback-round-1.md`. This is the input for the Zod schemas in slice 04. **Proposed**, with the author's answers to the first eight questions applied (see "Answers" at the end).
 
 Notation: `?` optional, `derived` computed in code and not stored, `system` set by the app, `user` entered or edited by the author. Money is integer pence, negative for spending.
 
@@ -13,14 +13,14 @@ Notation: `?` optional, `derived` computed in code and not stored, `system` set 
 | `date` | calendar date (`YYYY-MM-DD`), no time | import, `user` | Must be a real date. A future date is allowed with a warning |
 | `amountPence` | integer | import, `user` | Negative = spending, positive = income or refund. Never a float |
 | `description` | string, non-empty | import, `user` | The raw bank text |
-| `category` | one of 11 (below) | `ai`, `user` | Required once saved (see decision 1) |
-| `categorySource` | `ai` or `user` | system | `uncategorised` goes away if a category is required (decision 1) |
-| `mood` | one of 8, optional | `user` | |
-| `motivation` | one of 9, optional | `user` | |
-| `outcome` | one of 6, optional | `user` | |
-| `note` | string, max length TBD, optional | `user` | Free text, one note per transaction |
+| `category` | one of 11 (below) | `ai`, `user` | Required: a row without one cannot be saved (D-037) |
+| `categorySource` | `ai` or `user` | system | `uncategorised` is removed, because every saved row has a category |
+| `merchantName` | string, optional | import | The clean merchant name. Receipts set it; CSV rows leave it empty for now (ADR-001 open decision 15) |
+| `mood` | one of 8, optional | `user` | Together with `motivation`, the "why" behind the buy |
+| `motivation` | one of 9, optional | `user` | See above |
+| `outcome` | one of 6, optional | `user` | Often added later, after the purchase |
+| `note` | string, max 200 characters, optional | `user` | Free text, one note per transaction. Limit lives in the config file |
 | `original` | `{ date, amountPence, description }` | system | The imported values, kept for duplicate matching and the "edited" marker (D-034, D-035) |
-| `runningBalance` | integer pence, optional | import | Only when the file has one; used in duplicate matching (D-035) |
 | `importId` | string | system | Which import saved it |
 | `sourceType` | `csv`, `pdf` or `receipt` | system | |
 | `createdAt` | timestamp | system | |
@@ -28,7 +28,7 @@ Notation: `?` optional, `derived` computed in code and not stored, `system` set 
 **Derived, not stored:**
 - `merchantKey`: description with digits and reference numbers stripped, lower-cased, trimmed (D-022). Used to group and for "apply to the same merchant".
 - `edited`: true when date, amount or description differs from `original`.
-- `contextState`: `none` (no mood, motivation, outcome or note), `partial`, or `complete` (all three of mood, motivation and outcome set).
+- `contextState`: `complete` when `mood` and `motivation` are both set (outcome and note are optional); `partial` when only one of them is set, or only outcome or note; `none` when nothing is set.
 - `kind`: `spending` (amount negative, category not Income or Transfers), `income`, `transfer`, `refund`. Decides what the spending charts include (D-006, D-033).
 
 ## 2. The lists (fixed in code)
@@ -56,6 +56,7 @@ Validated before anything else: type (CSV, PDF, image), size (5 MB), PDF pages (
 
 **Review row** = the transaction fields (without `id`, `visitorId`, `importId`, `createdAt`) plus:
 - `rowState`: `valid`, `needs-fix`, `duplicate`, or `dropped`.
+- `runningBalance`: integer pence, optional. Only during review, used for duplicate matching (D-035); not stored.
 - `problems`: list of reasons for `needs-fix`, for example "amount is not a number", "currency is not GBP", **"no category"**.
 - `duplicateOf`: the matched stored transaction, when `duplicate`.
 - `include`: for duplicates, whether the user chose to keep it.
@@ -73,7 +74,7 @@ Validated before anything else: type (CSV, PDF, image), size (5 MB), PDF pages (
 | Per row: `date`, `description`, `category`, `mood`, `motivation`, `outcome`, `note` exists?, `amountPence`, `edited`. Filters: month, category, clicked chart segment | Click-to-edit cells: `date`, `description`, `category`, `amountPence`. Opens the context panel. Undo (10 seconds). "Apply to N other transactions from this merchant" |
 
 Columns: Date, Description, Category, Context, Amount.
-- **Context cell:** small tags for the mood and the motivation that are set (for example "happy", "impulse"), and a "View context" link to a dialog. When there is no context, an "Add context" prompt instead.
+- **Context cell:** small tags for each of mood, motivation and outcome that is set (for example "happy", "impulse"), and a "View context" link to a dialog. When there is no context, an "Add context" prompt instead.
 - **View context dialog (read only):** date, description, amount, category, mood, motivation, outcome, note, and an "Edit context" action that opens the context panel.
 - **States:** loading, empty, filtered-empty, populated, error.
 
@@ -83,7 +84,7 @@ Columns: Date, Description, Category, Context, Amount.
 |---|---|
 | The transaction's `date`, `description`, `category`, `amountPence`, and current `mood`, `motivation`, `outcome`, `note` | `mood` ("How I felt"), `motivation` ("Why I bought it"), `outcome` ("What happened"), `note`. Clearing a field, with undo |
 
-Each of the three is a pick from its fixed list, or empty. Note: free text, maximum length TBD, validated on save.
+Each of the three is a pick from its fixed list. Mood and motivation are what make the context complete; outcome is optional. Note: free text, maximum 200 characters, validated on save.
 
 ### Insights (tab order: Behaviour, By category, 12-month trend)
 
@@ -104,13 +105,17 @@ Each of the three is a pick from its fixed list, or empty. Note: free text, maxi
 
 Persistent banner "Demo data only." in the deployed demo. "Project repo" link to GitHub.
 
-## 4. Questions to validate
+## 4. Answers (author)
 
-1. **Category required (decision 1).** If every stored transaction has a category, should `categorySource` just be `ai | user`, and is `uncategorised` removed everywhere? The demo data then cannot show uncategorised rows saved, only rows blocked in review.
-2. **Note length:** maximum characters for `note`? I suggest 500.
-3. **One note per transaction**, or separate notes for mood, motivation and outcome? The SPEC says one optional note; the mockup shows one.
-4. **Context state:** is `complete` "mood, motivation and outcome all set", with the note optional?
-5. **Running balance:** keep it as an optional stored field (used for duplicate matching), or only during review?
-6. **Receipts:** a receipt becomes one transaction with the total (D-001). Do we want to store the merchant name as its own field, or just the description?
-7. **Tags in the table:** show mood and motivation only (as in your two examples), or all three including outcome?
-8. **Derived `kind`:** a positive amount categorised as anything other than Income counts as a refund of that category. Right?
+1. **Category required: yes.** `categorySource` is `ai | user`; `uncategorised` is removed.
+2. **Note length: 200 characters (author considered 200 or 140).** Reason: notes cost AI tokens when they are read for interpretation (D-036), and they could be added to many transactions at once. 200 characters is about 50 tokens, so 1,000 notes is about 50,000 tokens; 140 would be about 35 each. The limit is one value in the config file, so it can be lowered without code changes. Decided early on purpose.
+3. **One note per transaction: yes.**
+4. **Mood and motivation are the required part of context; outcome and note are optional.** In the author's words, this is "the why behind the buy, so the exact thing that will make the app valuable". Context is complete when both are set.
+5. **Running balance: review only, not stored.**
+6. **Merchant name: its own field,** optional and stored.
+7. **Tags: show all three** (mood, motivation, outcome) for whichever are set.
+8. **A positive amount in any category other than Income is a refund of that category: yes.**
+
+## 5. Still open
+
+- **Is mood and motivation required to save any context, or only to make it count as complete?** If both are required to save, a "partial" state cannot exist, except when outcome or a note is added to a transaction that already has both. If they are only required for "complete", a user can save just a mood, and the transaction counts as partial, with a prompt to add the motivation. The draft assumes the second.
