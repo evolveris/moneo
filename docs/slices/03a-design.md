@@ -94,4 +94,4 @@ Decisions from the first design review, all logged in `SPEC-DECISIONS.md` and ap
 - D-047: future dates deferred.
 - D-048: icons, accent touches, 30px logo, "Project repo" link.
 
-Changes made to the mockups beyond the feedback list: one shared header injected by `mockup.js` (so the four pages stay consistent), a reset confirmation dialog that lands on Import, an icon-only-free narrow header that wraps the tabs onto their own row, and a "Load demo data" card on the Import page in demo mode.
+Changes made to the mockups beyond the feedback list: one shared header injected by `mockup.js` (so the four pages stay consistent), a reset confirmation dialog that lands on Import, a narrow-screen header that wraps the tabs onto their own row (the tabs were hidden on phones before), and a "Load demo data" card on the Import page in demo mode.
