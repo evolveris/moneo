@@ -1,6 +1,6 @@
 # Slice 03: Tooling
 
-- Status: plan written, waiting for approval
+- Status: plan written, answers recorded, waiting for approval
 - Journeys: none (foundation)
 - Depends on: slice 02 (merged)
 - Branch / PR: `slice-03-tooling` / not opened yet
@@ -71,15 +71,15 @@ There is no single "best" set. A good rule of thumb: start from the recommended 
 - **Zod:** install `zod` (version 4).
 - **ESLint:** the additions above, in `eslint.config.mjs`.
 - **Prettier:** `prettier`, `eslint-config-prettier`, `prettier-plugin-tailwindcss` (sorts Tailwind classes, pointed at `src/app/globals.css` for Tailwind 4). `.prettierrc` matches the code that is already there: no semicolons, double quotes. Scripts `format` and `format:check`.
+- **Git hooks:** Husky runs `lint-staged` before each commit. On staged files only, it runs `prettier --write` and `eslint --fix`. Typecheck, tests and build stay in CI so the commit stays fast. A hook can be skipped with `--no-verify`, so CI remains the real gate.
 - **Scripts:** `typecheck` (`tsc --noEmit`), plus `lint`, `format:check`, `test:run`. And `check`, which runs all of them in turn, so one command before a pull request.
 - **CI:** `.github/workflows/ci.yml`, on pull requests and on pushes to `main`: Node 22, `npm ci`, then typecheck, lint, format check, tests, build. Types for `LayoutProps` and routes come from `next typegen` before `tsc`, so the build is not needed just for types (the README currently says "run the build first").
 - **README:** a "Checks" section (what each command does, hot reload notes, how to run tests in watch mode) replacing the "run build first" note.
 
 ## Out of scope
 
-- Git hooks (Husky, lint-staged). Optional, adds moving parts; CI is the gate.
+- Branch protection on GitHub (making CI required to merge): parked by the author for later. Revisit after CI has run a few times.
 - React Testing Library, `jsdom`, Playwright or other component and end-to-end testing. Added when the first component needs a test (async Server Components cannot be unit tested with Vitest anyway).
-- Branch protection on GitHub (making CI required to merge): a setting only you can change.
 - Editor setup files (`.vscode/`), coverage thresholds, dependency update bots.
 - Fixing the `npm audit` finding that comes in through `shadcn`.
 - Any new application behaviour.
@@ -89,7 +89,8 @@ There is no single "best" set. A good rule of thumb: start from the recommended 
 - `package.json`, `package-lock.json`
 - `eslint.config.mjs`
 - `vitest.config.mts` (new)
-- `.prettierrc`, `.prettierignore` (new)
+- `.prettierrc`, `.prettierignore` (new; ignores `src/components/ui`)
+- `.husky/pre-commit` (new) and a `lint-staged` entry in `package.json`
 - `.github/workflows/ci.yml` (new)
 - `src/lib/env.ts` and `src/lib/env.test.ts` (new): `parseNeo4jEnv` and its tests
 - `src/lib/neo4j.ts` (use `parseNeo4jEnv`)
@@ -109,13 +110,17 @@ There is no single "best" set. A good rule of thumb: start from the recommended 
 
 ## Open questions
 
-1. **Formatting pass:** Prettier will reformat some existing files (including the shadcn component in `src/components/ui`). I would do it in one separate commit inside this pull request, so the diff is easy to skip. Or leave `src/components/ui` out of Prettier since shadcn regenerates it? I would leave it out.
-2. **Type-aware linting:** OK to add `recommendedTypeChecked`, at the cost of slightly slower lint? I think yes.
-3. **Build in CI:** Vercel already builds every pull request. Running `next build` in CI as well doubles the work but catches build errors in the checks list on GitHub. I would include it. OK?
-4. **Git hooks:** skip for now (CI is the gate), or add Husky so lint and format run before each commit?
-5. **Required check:** after the first CI run, do you want to turn on branch protection so `main` needs CI to be green? You do this in GitHub settings; I will give the steps.
-6. **Zod env schema location:** `src/lib/env.ts` with `parseNeo4jEnv` only for now, or a general `env` module for all variables? I would keep it to Neo4j and grow it as variables are added.
+None. All six were answered by the author (see below).
 
 ## Decisions made during the slice
 
-Record anything decided while building, with a pointer to SPEC-DECISIONS.md or an ADR.
+Answers to the plan's open questions (author):
+
+1. Prettier: `src/components/ui` is left out, because shadcn copies component source into the repo and overwrites it when a component is re-added or updated. Everything else gets one separate formatting commit.
+2. Type-aware linting (`recommendedTypeChecked`): yes.
+3. `next build` in CI: yes.
+4. Git hooks: yes, Husky with lint-staged (lint and format on staged files before each commit).
+5. Branch protection: not yet, parked for later.
+6. Env schema: `src/lib/env.ts` for the Neo4j variables only, growing as variables are added.
+
+Record anything else decided while building, with a pointer to SPEC-DECISIONS.md or an ADR.
