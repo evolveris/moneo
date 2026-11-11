@@ -1,9 +1,9 @@
 # Slice 01: Deploy
 
-- Status: in progress
+- Status: merged
 - Journeys: none (foundation)
 - Depends on: slice 00 (merged), ADR-001 (Vercel for hosting)
-- Branch / PR: `slice-01-deploy` / not opened yet
+- Branch / PR: `slice-01-deploy` / PR #2
 
 ## Goal
 
