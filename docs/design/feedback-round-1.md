@@ -54,11 +54,11 @@ Author's answers. Still not applied to the mockups or the SPEC; the SPEC items a
 
 ### New and changed feedback
 
-- **Remove the "Checklist" button** from the header. The author sees no checklist panel in the mockups and does not understand the button. Open: does this remove only the button, or the whole guided demo (SPEC J9, D-027, D-029)? Until answered, J9 is unchanged in the SPEC.
+- **Remove the "Checklist" button** from the header. The author sees no checklist panel in the mockups and does not understand the button. **Decided:** only the header button is removed; the guided demo itself (J9, D-027, D-029) stays. This conflicts with J9, which says the checklist can be reopened from a button in the header and that the header button is hidden in user mode. To settle when writing it up: how a dismissed checklist is reopened, if at all.
 - **Context tags (item 10), two sample transactions in the Transactions mockup:**
   1. mood "happy", motivation "impulse": tags on the row and a "View context" link opening a dialog.
-  2. mood "sad": tag on the row and a "View details" link opening a dialog with the extra information added (note, motivation, outcome).
-  Open: one label for the link ("View context" or "View details") or both?
+  2. mood "sad": tag on the row and a "View context" link opening a dialog with the extra information added (note, motivation, outcome).
+  **Decided:** both rows use the label "View context".
 - **Editing:** click to edit inline, confirmed (D-034, ADR-001 open decision 18). A spike still verifies it at 5,000 rows.
 
 ### Lists (D-023 updated)
