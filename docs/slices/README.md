@@ -10,7 +10,7 @@ A slice's detailed plan (`NN-name.md`, from `_template.md`) is written only when
 |---|---|---|---|
 | 00 | App: Next.js, strict TypeScript, Tailwind, shadcn, layout | - | merged |
 | 01 | Deploy: Vercel, preview per pull request, environment variables documented | - | merged |
-| 02 | Database: Neo4j AuraDB connection, server-only client, health check | - | plan written |
+| 02 | Database: Neo4j AuraDB connection, server-only client, health check | - | in review |
 | 03 | Tooling: Vitest, lint and format, CI check, Zod installed | - | planned |
 | 04 | Domain core, no UI: money in pence, Zod schemas, category and context lists, mode flag, `getLimits` | shared rules | planned |
 | 05 | Demo data and a read-only list: visitor cookie, per-visitor copy, virtualised table of 5,000 rows | J1 | planned |
@@ -34,6 +34,7 @@ These are decisions or spikes the slice depends on. Do them first, as small sepa
 
 - **Before slice 05:** ADR for the data model (ADR-001 open decision 1). Slices 05 to 07 write transactions to Neo4j, so the model must exist first.
 - **Before slice 05:** table spike (ADR-001 open decision 18): 5,000 rows, one editable column, Zod on commit, keyboard navigation.
+- **Before slice 05:** decide the dev database. AuraDB Free allows one instance, shared by local and deployed. Options: keep sharing, or run Neo4j in Docker locally (see slice 02 plan).
 - **Before slice 06:** a decision on how the CSV parser learns the layout (ADR-001 open decision 12). Presets only is enough to start.
 - **Before slice 08:** LangGraph.js spike (ADR-001 open decisions 9 and 14), and the decision on the multimodal model (open decision 10) before slices 13 and 14.
 - **Before slice 15:** the mode flag mechanism (ADR-001 open decision 16). An environment variable is enough to start.

@@ -1,9 +1,9 @@
 # Slice 02: Database
 
-- Status: plan written, waiting for approval
+- Status: in review
 - Journeys: none (foundation)
 - Depends on: slice 01 (merged), ADR-001 (Neo4j AuraDB)
-- Branch / PR: `slice-02-database` / not opened yet
+- Branch / PR: `slice-02-database` / see the pull request
 
 ## Goal
 
@@ -70,4 +70,6 @@ None. This slice has no user behaviour from the SPEC.
 
 ## Decisions made during the slice
 
-Record anything decided while building, with a pointer to SPEC-DECISIONS.md or an ADR.
+- Local development and the deployed app share the one AuraDB Free instance. Neo4j allows one free instance per account, so a second one for dev would need a paid tier. This is fine while the database is empty. Before slice 05 (which writes data), decide whether to run Neo4j locally in Docker for dev (`bolt://localhost:7687`) or keep sharing. Recorded as a gate in `docs/slices/README.md`.
+- The Zod env schema waits for slice 03; the three variables are checked by hand in `src/lib/neo4j.ts`.
+- Aura pausing is accepted for now. A daily cron ping to `/api/health` can be added before the demo link is shared.
