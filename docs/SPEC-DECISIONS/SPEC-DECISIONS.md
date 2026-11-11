@@ -291,3 +291,89 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 - Options: (a) interpret on the fly each time a chart is drawn, nothing stored; (b) store the interpretation back in Neo4j as derived data, linked to the transaction and marked as AI-made.
 - Answer: (b). Workflow: Neo4j (notes) -> data function -> LangGraph.js workflow -> Zod -> data function -> Neo4j (derived data) -> charts. Output is a fixed label list or "unknown". The author wants to build the LangGraph workflow themselves and own the whole flow; this is the main learning goal of the "agentic" part. Privacy of notes sent to the AI provider is not a concern for now (personal app, synthetic demo data).
 - Affects: SPEC product vision ("The agentic loop"); ADR-001 open decisions 1 (data model must leave room for derived data), 9, 14; usage limits (D-008)
+
+## D-037: A row with no category cannot be saved (replaces part of D-012 and D-020)
+
+- Journey: J2, J5, J6, J8, J9
+- Status: decided
+- Question: D-012 and D-020 let an unknown category through review, saved as uncategorised. The mockups showed it as a quiet flag. Should it block saving?
+- Answer: Yes. A row with no category keeps its "? Unknown category" flag and counts as an exception, and "Save transactions" is disabled until every row has a category (or is dropped). Reason: no category means low-quality data. The AI can still answer "unknown" (D-020); the user picks the category in review. As a result `uncategorised` is removed as a category source (only `ai` and `user` remain), the "Uncategorised" slice and the `partial` view state disappear, and the demo data (J9) no longer contains uncategorised rows.
+- Affects: SPEC States, J2, J5, J6, J8, J9; supersedes D-012 and D-020 where they say an unknown category does not block saving
+
+## D-038: Navigation order and Insights sections
+
+- Journey: all screens
+- Status: decided
+- Answer: The tabs are Insights, Transactions, Import, in that order, because most time will be spent in Insights. In Insights the sections are Behaviour first, By category second, 12-month trend third.
+- Affects: SPEC shared rules, J8
+
+## D-039: Reset wipes everything and lands on Import
+
+- Journey: J10, J1
+- Status: decided
+- Answer: "Reset demo" wipes the visitor's whole copy, and it behaves the same from Insights, Transactions and Import. After the confirmation the app returns to Import on "Choose source". In demo mode that step also offers "Load demo data" next to the sample files, so a reset can lead straight back to demo data. The first-visit landing page when there is no data is proposed to be the same view and is marked [Proposed] in the SPEC.
+- Affects: SPEC J1, J10, App state
+
+## D-040: Mood-by-category chart is not added for now
+
+- Journey: J8
+- Status: deferred
+- Answer: The idea of a chart correlating mood with spending category (what is spent on when happy or stressed) is left out of the mockups and J8 for now. Revisit with the agentic loop (D-036).
+- Affects: SPEC J8
+
+## D-041: Remove the header "Checklist" button
+
+- Journey: J9
+- Status: decided (button); open (reopening)
+- Answer: The header button is removed. The guided demo checklist itself (D-027, D-029) stays. Still open: how a dismissed checklist is reopened, or whether it is not. The SPEC marks the reopen behaviour [Proposed] until the author answers.
+- Affects: SPEC J9
+
+## D-042: Fixed lists: categories, motivation and outcome
+
+- Journey: J6, J7, J8
+- Status: decided (lists); open (chart colours)
+- Answer: Spending categories: Groceries, Eating out, Transport, Housing, Bills and utilities, Subscriptions, Shopping, Health and fitness, Other; plus Income and Transfers, which stay out of the spending charts (D-006). Entertainment and Travel were considered and dropped. Mood is unchanged (happy, stressed, bored, sad, anxious, excited, calm, tired). Motivation: need, planned, habit, impulse, treat, social pressure, deal or sale, social media, unwell (feeling under the weather, or buying for health reasons). Outcome: glad I bought it, regret it, used it, unused, returned, sold. The lists are fixed in code (D-002).
+- Open: with 9 spending categories and six validated chart colours, the draft mockups show the six biggest and group the rest as "Smaller categories", with all categories in the table view. The author has not confirmed this.
+- Affects: SPEC fixed lists, J6, J7, J8; supersedes the starter lists in D-023 and the "mood list still to be drafted" in D-002
+
+## D-043: Context in the transaction table
+
+- Journey: J7
+- Status: decided
+- Answer: The Context column shows small tags for each of mood, motivation and outcome that is set, with a "View context" link that opens a read-only dialog (date, amount, category, the three values, the note, and an "Edit context" action). A quiet "Add context" prompt stays where there is none.
+- Affects: SPEC J7
+
+## D-044: Mood and motivation are required to save context
+
+- Journey: J7, J8
+- Status: decided
+- Answer: Mood and motivation are the "why" behind the buy, in the author's words "the exact thing that will make the app valuable". Both are required to save any context. Outcome and the note are optional, and the outcome can be added later. A transaction therefore has no context or a complete context, and the `partial` context state (D-033) is removed.
+- Affects: SPEC States, J7, J8
+
+## D-045: Note length limit of 200 characters
+
+- Journey: J7
+- Status: decided
+- Answer: The note is limited to 200 characters, one value in the config file. Reason: notes are read by the AI for interpretation (D-036) and could be added to many transactions at once, so the token cost matters. 200 characters is about 50 tokens, so 1,000 notes is about 50,000 tokens. 140 was considered and can be set later by changing the config value.
+- Affects: SPEC J7, shared rules
+
+## D-046: Merchant name is its own field
+
+- Journey: J4, J6
+- Status: decided
+- Answer: A transaction can store a clean `merchantName` as its own optional field. Receipts fill it; CSV rows leave it empty for now. How merchants are matched in general is still ADR-001 open decision 15.
+- Affects: SPEC J4, data model (ADR-001 open decision 1)
+
+## D-047: Future dates
+
+- Journey: J4, J12
+- Status: deferred
+- Answer: The SPEC lets a future date through with a warning (receipts, edits). The author's view is that it should probably be allowed only for scheduled direct debits and standing orders. Not decided; revisit when import and editing are built.
+- Affects: SPEC J4, J12
+
+## D-048: Visual details from the first design review
+
+- Journey: all screens
+- Status: decided
+- Answer: Icons on the tabs and in the import step indicator, with arrows between steps instead of numbers. Accent touches (a gradient logo mark, a gradient line under the header, accent on the active tab) because the design felt bland. Logo at 30px. A "Project repo" link with the GitHub icon to the right of "Reset demo". Click-to-edit cells in the table (D-034). The card layout on narrow screens is kept for the transaction screens. All colours are still placeholders.
+- Affects: the mockups; later the UI slices
