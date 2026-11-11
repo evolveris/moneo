@@ -1,9 +1,9 @@
 # Slice 02: Database
 
-- Status: in review
+- Status: merged
 - Journeys: none (foundation)
 - Depends on: slice 01 (merged), ADR-001 (Neo4j AuraDB)
-- Branch / PR: `slice-02-database` / see the pull request
+- Branch / PR: `slice-02-database` / PR #3
 
 ## Goal
 
