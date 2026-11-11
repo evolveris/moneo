@@ -1,6 +1,6 @@
 # Slice 03a: Design
 
-- Status: plan written, waiting for approval
+- Status: in progress, design review decisions applied, waiting for the author's review
 - Journeys: J2, J5, J6, J7, J8 (screens only; nothing is built)
 - Depends on: slice 03 (merged). Feeds slice 04 (domain core) and every UI slice after it.
 - Branch / PR: `slice-03a-design` / not opened yet
@@ -52,18 +52,46 @@ None are made to pass. No application code changes. This slice settles open prod
 
 ## Open questions
 
-1. **How much design?** Review and decide on the four existing mockups only, or also add missing screens (for example the demo checklist and sample picker for J9, J10, and the reset flow)? I would keep to the four plus the demo layer already in the draft, and leave J9 and J10 until slice 15.
-2. **Navigation:** top bar with Import as its own page, as drafted. OK?
-3. **Dark only, desktop first:** OK, or do you want a light mode or mobile first?
-4. **Categories:** the list is a placeholder. Do you want to draft it from your own spending, or should I propose about 10 to 12 to start from? (Must include "Income" and "Transfers", D-002.)
-5. **Mood, motivation and outcome lists:** draft together, one list at a time, about 8 values each? Should the AI-interpretation idea (D-036) influence them now, for example a motivation list that later AI labels can reuse?
-6. **Slice number:** I called this `03a` because that is what the branch is named. Keep it, or renumber the index so the design slice is 04 and everything shifts by one? I would keep 03a to avoid renumbering the plan and the SPEC references.
-7. **Branch:** `slice-03a-design` was cut before slices 01 to 03. I would rebase it onto `main` before starting. OK?
+All seven original questions are answered (see below). What is still open after the first design review is listed in the SPEC under "Still open": how a dismissed demo checklist is reopened, how the charts show nine categories with six colours, the landing page when there is no data, and future dates.
 
 ## What slice 04 must contain
 
-Filled in at the end of this slice, from the decisions above.
+From the decisions D-037 to D-048 and `docs/design/screen-fields.md`:
+
+- **Money:** integer pence type and helpers (parse, format, never floats).
+- **The fixed lists as typed constants:** 11 categories, 8 moods, 9 motivations, 6 outcomes (SPEC, Fixed lists), with Zod enums built from them.
+- **Zod schemas:** the stored `Transaction` (date as a real calendar date, `amountPence` integer, non-empty description, `category` required, `categorySource` `ai | user`, optional `merchantName`, an optional `context` object with required `mood` and `motivation` and optional `outcome` and `note` of at most 200 characters, the `original` values, `importId`, `sourceType`); the review row (adds `rowState`, `problems`, `duplicateOf`, `include`, optional `runningBalance`); the import summary and balance check.
+- **Derived values as pure functions with tests:** `merchantKey` (digits and references stripped, lower-cased, trimmed), `edited`, `contextState` (`none` or `complete`), `kind` (spending, income, transfer, refund).
+- **Limits config:** one config file holding the note length (200), undo window (10 s), file size, page and row limits, and `getLimits(visitorId)`.
+- **Mode flag:** demo or user, read in one place.
+- **Not in slice 04:** the data model in Neo4j (separate ADR before slice 05), any UI, the AI `extract` interface (slice 08).
 
 ## Decisions made during the slice
 
-Record anything decided while building, with a pointer to SPEC-DECISIONS.md or an ADR.
+Answers to the plan's open questions (author):
+
+1. Scope: the four existing mockups plus the demo layer already in the draft; J9 and J10 screens wait for slice 15. (The checklist panel itself is not mocked.)
+2. Navigation: tabs in the order Insights, Transactions, Import (D-038).
+3. Dark only, desktop first, with the card layout on narrow screens kept for the transaction screens (D-048).
+4. Categories: decided (D-042).
+5. Mood, motivation and outcome lists: decided (D-042).
+6. Keep the number `03a`.
+7. The branch was rebased onto `main` before starting.
+8. The mockups stay plain HTML with their own CSS, not shadcn components. The first real screen is built with shadcn from slice 05, using these decisions. (Assumed; the author did not object.)
+
+Decisions from the first design review, all logged in `SPEC-DECISIONS.md` and applied to the SPEC, `screen-fields.md` and the mockups:
+
+- D-037: a row with no category cannot be saved.
+- D-038: tab order Insights, Transactions, Import; Insights sections Behaviour, By category, 12-month trend.
+- D-039: reset wipes everything and lands on Import, "Choose source".
+- D-040: the mood-by-category chart is deferred.
+- D-041: the header "Checklist" button is removed (reopening still open).
+- D-042: the fixed lists.
+- D-043: context tags with a "View context" dialog.
+- D-044: mood and motivation are required to save context; no partial state.
+- D-045: note limit of 200 characters.
+- D-046: merchant name is its own field.
+- D-047: future dates deferred.
+- D-048: icons, accent touches, 30px logo, "Project repo" link.
+
+Changes made to the mockups beyond the feedback list: one shared header injected by `mockup.js` (so the four pages stay consistent), a reset confirmation dialog that lands on Import, an icon-only-free narrow header that wraps the tabs onto their own row, and a "Load demo data" card on the Import page in demo mode.

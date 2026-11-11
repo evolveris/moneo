@@ -1,6 +1,6 @@
 # Screen fields (draft for validation)
 
-What each screen reads and writes, drawn from the SPEC (D-002, D-006, D-012, D-022, D-023, D-034, D-035) and the draft mockups, plus the round 1 feedback in `feedback-round-1.md`. This is the input for the Zod schemas in slice 04. **Proposed**, with the author's answers to the first eight questions applied (see "Answers" at the end).
+What each screen reads and writes, drawn from the SPEC (D-002, D-006, D-022, D-023, D-034, D-035) and the design review decisions D-037 to D-048, and from the updated mockups. This is the input for the Zod schemas in slice 04. It now matches the SPEC; the author's answers are listed under "Answers" at the end.
 
 Notation: `?` optional, `derived` computed in code and not stored, `system` set by the app, `user` entered or edited by the author. Money is integer pence, negative for spending.
 
@@ -10,10 +10,10 @@ Notation: `?` optional, `derived` computed in code and not stored, `system` set 
 |---|---|---|---|
 | `id` | string | system | Not a bank ID; cannot be relied on for duplicates (D-035) |
 | `visitorId` | string | system | Demo mode: every query is scoped to it |
-| `date` | calendar date (`YYYY-MM-DD`), no time | import, `user` | Must be a real date. Future dates: to be decided later (see section 6) |
+| `date` | calendar date (`YYYY-MM-DD`), no time | import, `user` | Must be a real date. Future dates: to be decided later (D-047, section 6) |
 | `amountPence` | integer | import, `user` | Negative = spending, positive = income or refund. Never a float |
 | `description` | string, non-empty | import, `user` | The raw bank text |
-| `category` | one of 11 (below) | `ai`, `user` | Required: a row without one cannot be saved (D-037) |
+| `category` | one of 11 (section 2) | `ai`, `user` | Required: a row without one cannot be saved (D-037) |
 | `categorySource` | `ai` or `user` | system | `uncategorised` is removed, because every saved row has a category |
 | `merchantName` | string, optional | import | The clean merchant name. Receipts set it; CSV rows leave it empty for now (ADR-001 open decision 15) |
 | `context` | object, optional | `user` | A transaction has either no context or a complete one. Shape below |
@@ -29,12 +29,12 @@ Notation: `?` optional, `derived` computed in code and not stored, `system` set 
 **Derived, not stored:**
 - `merchantKey`: description with digits and reference numbers stripped, lower-cased, trimmed (D-022). Used to group and for "apply to the same merchant".
 - `edited`: true when date, amount or description differs from `original`.
-- `contextState`: `complete` when `context` exists (so mood and motivation are both set; outcome and note are optional), otherwise `none`. There is no `partial` state (decision 4).
+- `contextState`: `complete` when `context` exists (so mood and motivation are both set; outcome and note are optional), otherwise `none`. There is no `partial` state (D-044).
 - `kind`: `spending` (amount negative, category not Income or Transfers), `income`, `transfer`, `refund`. Decides what the spending charts include (D-006, D-033).
 
 ## 2. The lists (fixed in code)
 
-- **Category (11):** Groceries, Eating out, Transport, Housing, Bills and utilities, Subscriptions, Shopping, Health and fitness, Other, Income, Transfers.
+- **Category (11, D-042):** Groceries, Eating out, Transport, Housing, Bills and utilities, Subscriptions, Shopping, Health and fitness, Other, Income, Transfers.
 - **Mood (8):** happy, stressed, bored, sad, anxious, excited, calm, tired.
 - **Motivation (9):** need, planned, habit, impulse, treat, social pressure, deal or sale, social media, unwell.
 - **Outcome (6):** glad I bought it, regret it, used it, unused, returned, sold.
@@ -108,12 +108,12 @@ Persistent banner "Demo data only." in the deployed demo. "Project repo" link to
 
 ## 4. Answers (author)
 
-1. **Category required: yes.** `categorySource` is `ai | user`; `uncategorised` is removed.
-2. **Note length: 200 characters (author considered 200 or 140).** Reason: notes cost AI tokens when they are read for interpretation (D-036), and they could be added to many transactions at once. 200 characters is about 50 tokens, so 1,000 notes is about 50,000 tokens; 140 would be about 35 each. The limit is one value in the config file, so it can be lowered without code changes. Decided early on purpose.
+1. **Category required: yes (D-037).** `categorySource` is `ai | user`; `uncategorised` is removed.
+2. **Note length: 200 characters, D-045 (author considered 200 or 140).** Reason: notes cost AI tokens when they are read for interpretation (D-036), and they could be added to many transactions at once. 200 characters is about 50 tokens, so 1,000 notes is about 50,000 tokens; 140 would be about 35 each. The limit is one value in the config file, so it can be lowered without code changes. Decided early on purpose.
 3. **One note per transaction: yes.**
-4. **Mood and motivation are required to save any context; outcome and note are optional.** In the author's words, this is "the why behind the buy, so the exact thing that will make the app valuable". A transaction therefore has no context or a complete one, and the `partial` context state goes away (D-033 listed `none`, `partial`, `complete`).
+4. **Mood and motivation are required to save any context (D-044); outcome and note are optional.** In the author's words, this is "the why behind the buy, so the exact thing that will make the app valuable". A transaction therefore has no context or a complete one, and the `partial` context state goes away (D-033 listed `none`, `partial`, `complete`).
 5. **Running balance: review only, not stored.**
-6. **Merchant name: its own field,** optional and stored.
+6. **Merchant name: its own field (D-046),** optional and stored.
 7. **Tags: show all three** (mood, motivation, outcome) for whichever are set.
 8. **A positive amount in any category other than Income is a refund of that category: yes.**
 
