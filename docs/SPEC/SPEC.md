@@ -82,6 +82,19 @@ Scope of this section: import, categorise, context, and charts. Finance educatio
 - Limits: max file size 5 MB, max 10 PDF pages, max 5,000 rows per import, max 5 AI-backed uploads per visitor per hour. All limits live in one config file in the code (for example `src/config/limits.ts`), with an optional per-visitor override keyed by visitor ID, so a limit can be changed quickly for one particular user. For now overrides are read from an environment variable (JSON, keyed by visitor ID) through a single function, `getLimits(visitorId)`, so the mechanism can change later (ADR-001 open decision 16). On top of the per-visitor limit there is a global daily cap on AI calls across all visitors; when it is reached, samples run through replay (D-010, D-032). A visitor who clears cookies gets a fresh per-visitor limit; the global cap bounds the cost. (D-008)
 - The deployed app shows a persistent banner: "Demo data only." Demo mode is a config flag, not tied to the deployment: it is on in the deployed app, and can be switched on locally for a live demo. In demo mode there is no file picker; the visitor chooses from the shipped sample files, never real bank statements. With demo mode off (local or private use), the normal file picker is available. (D-004, D-009)
 - Each visitor to the deployed demo gets their own copy of the demo data, keyed by a cookie and expiring after a few hours. Nothing a visitor does affects another visitor. (D-005)
+- Navigation: three tabs in this order, **Insights**, **Transactions**, **Import**, because most time is spent in Insights. Inside Insights the sections are Behaviour, By category, then 12-month trend. (D-038)
+- Every saved transaction has a category. A row without one cannot be saved: it keeps a "? Unknown category" flag in review and "Save transactions" stays disabled until a category is picked or the row is dropped. (D-037)
+- Context is mood and motivation (required, together) plus an optional outcome and an optional note of at most 200 characters, held in the config file. A transaction has either no context or a complete one. (D-044, D-045)
+- A transaction can carry a clean merchant name as its own optional field; receipts fill it, CSV rows leave it empty for now. (D-046)
+
+### Fixed lists (D-042)
+
+Fixed in code. No custom values in v1 (D-002).
+
+- **Category (11):** Groceries, Eating out, Transport, Housing, Bills and utilities, Subscriptions, Shopping, Health and fitness, Other, Income, Transfers. Income and Transfers never appear in the spending charts (D-006).
+- **Mood, "how I felt" (8):** happy, stressed, bored, sad, anxious, excited, calm, tired.
+- **Motivation, "why I bought it" (9):** need, planned, habit, impulse, treat, social pressure, deal or sale, social media, unwell (feeling under the weather, or buying for health reasons).
+- **Outcome, "what happened" (6):** glad I bought it, regret it, used it, unused, returned, sold.
 
 ### States (D-033)
 
@@ -89,7 +102,7 @@ Scope of this section: import, categorise, context, and charts. Finance educatio
 
 | State | Meaning | What the user sees |
 |---|---|---|
-| Empty | No transactions stored | Empty screen with two actions: "Load demo data" and "Import a statement" |
+| Empty | No transactions stored | **[Proposed]** The app opens on Import, "Choose source", which offers "Load demo data" (demo mode) or the file picker. Insights and Transactions show an empty state that points to Import (D-039) |
 | Populated | At least one transaction | Transaction list and charts |
 | Resetting | Demo data being reset | Disabled actions, progress indicator |
 | Error | Database or server unreachable | Error message with retry; no partial data shown |
@@ -102,14 +115,14 @@ Terminal alternatives: `rejected` (failed validation before extraction), `failed
 
 **Row state inside review**
 
-`valid`, `needs-fix` (Zod error, for example unparseable date), `duplicate` (already stored), `dropped` (removed by the user). Only `valid` rows are saved. The user can fix `needs-fix` rows inline or drop them, and can edit any row's date, amount and description before saving.
+`valid`, `needs-fix` (Zod error, for example unparseable date), `duplicate` (already stored), `dropped` (removed by the user). A row with no category is flagged "? Unknown category" and counts as an exception that blocks saving, like `needs-fix` (D-037). Only `valid` rows are saved. The user can fix `needs-fix` rows inline, pick a category, or drop rows, and can edit any row's date, amount and description before saving.
 
 **Transaction state**
 
-- Category source: `uncategorised`, `ai`, `user`.
-- Context: `none`, `partial`, `complete` (complete means mood, reason and outcome are all filled).
+- Category source: `ai`, `user` (every saved transaction has a category, D-037).
+- Context: `none`, `complete` (mood and motivation set; outcome and note optional, D-044).
 
-**View state** (transaction list and charts): `loading`, `empty` (no data), `filtered-empty` (data exists but filters match nothing), `populated`, `partial` (some transactions uncategorised, shown as an "Uncategorised" slice), `error`.
+**View state** (transaction list and charts): `loading`, `empty` (no data), `filtered-empty` (data exists but filters match nothing), `populated`, `error`.
 
 ### Journeys
 
@@ -121,15 +134,15 @@ Feature: First visit
   Scenario: Empty app offers a way in
     Given the database holds no transactions
     When I open the app
-    Then I see the empty state
-    And I see "Load demo data" and "Import a statement"
+    Then I see the empty state, which is the Import page on "Choose source" [Proposed]
+    And in demo mode I see "Load demo data" and the sample files, otherwise the file picker
     And I do not see any charts
 
   Scenario: Demo user loads demo data
     Given the app is in the empty state
     When I choose "Load demo data"
     Then a copy of the demo transactions is stored for my visitor session only
-    And I land on the transaction list in the populated state
+    And I land on Insights, the first tab, in the populated state [Proposed]
     And the demo banner is visible
 
   Scenario: Returning visitor whose copy has expired
@@ -197,6 +210,7 @@ Feature: Import bank CSV
     Given a CSV of 4,000 rows where 12 are duplicates and 5 have an unknown category
     When extraction finishes
     Then review shows a summary and only the 17 exception rows, not all 4,000
+    And save stays disabled until the 5 unknown categories are picked or those rows are dropped
     And I can expand to all rows
 
   Scenario: Wrong file type (local or private environment)
@@ -282,7 +296,7 @@ Feature: Import receipt photo
 Edge cases:
 - Receipt in a foreign currency: needs-fix, "GBP only".
 - Multiple receipts in one photo, or a receipt cut off: treated as unreadable; the user decides.
-- Receipt dated in the future or years ago: shown as a warning in review, not blocked.
+- Receipt dated in the future or years ago: shown as a warning in review, not blocked. Future dates are to be revisited (D-047).
 - Total on the receipt differs from sum of line items: warning, the user picks the total.
 - Line items are out of scope for v1; only the total is saved. A receipt is always its own transaction, never attached to a bank row (D-001). There is no manual entry (D-018), and the review shows no photo next to the proposed transaction (D-019).
 - HEIC or very large photo: converted or rejected with a clear message.
@@ -295,12 +309,12 @@ Applies to J2, J3 and J4.
 
 - **Summary**: row count, date range, money in, money out, net, and counts per row state (valid, needs-fix, duplicate, unknown category).
 - **Balance check (optional)**: opening and closing balance fields, prefilled when the file contains them. If they are filled in and opening balance plus net does not equal closing balance, a warning is shown. The user can still confirm.
-- **Exceptions list** (the default view): `needs-fix` rows, `duplicate` rows and unknown-category rows. Rows with a category are not listed.
+- **Exceptions list** (the default view): `needs-fix` rows, `duplicate` rows and rows with an unknown category. Rows with a category are not listed.
 - **Show all rows**: a virtualised list of every row, filterable by row state.
 - **Editing**: any row's date, amount and description can be edited in the table, as click-to-edit cells validated on commit (D-034, ADR-001 open decision 18).
 - **Bulk actions**: skip all duplicates, include all duplicates, drop selected rows.
-- **Categories are assigned before review** (D-012). The AI must pick a category from the fixed list or answer "unknown" (D-020). An unknown category does not block saving; the row is saved as uncategorised unless the user picks a category in review.
-- **Confirm button**: states what will be saved ("Save 3,812 transactions"). Disabled while any row is `needs-fix` or when there are zero valid rows, with the reason shown.
+- **Categories are assigned before review** (D-012). The AI must pick a category from the fixed list or answer "unknown" (D-020). A row with an unknown category is flagged "? Unknown category" and cannot be saved until the user picks a category in review or drops the row (D-037).
+- **Confirm button**: states what will be saved ("Save 3,812 transactions"). Disabled while any row is `needs-fix`, while any row has no category, or when there are zero valid rows, with the reason shown.
 
 ```gherkin
 Feature: Review before saving
@@ -320,6 +334,13 @@ Feature: Review before saving
     Given one row is needs-fix
     Then confirm is disabled and says why
     When I fix or drop that row
+    Then confirm is enabled
+
+  Scenario: A row with no category blocks confirm
+    Given the AI answered "unknown" for 5 rows
+    Then those rows show "? Unknown category"
+    And confirm is disabled and says 5 rows have no category
+    When I pick a category for each of them
     Then confirm is enabled
 
   Scenario: Drop a row
@@ -344,11 +365,12 @@ Feature: Categorisation
 
   Scenario: Auto-categorise on import
     Given I confirmed an import
-    Then each saved transaction has a category with source "ai" or "uncategorised"
+    Then each saved transaction has a category with source "ai" or "user"
 
-  Scenario: Unknown stays uncategorised
+  Scenario: Unknown must be chosen before saving
     Given the AI answers "unknown" for a transaction
-    Then it is saved as uncategorised and listed in review as an exception
+    Then it is listed in review as an exception with "? Unknown category"
+    And it is not saved until I pick a category, and its source becomes "user"
 
   Scenario: Override a category
     Given a transaction categorised as "Groceries" by the AI
@@ -376,7 +398,7 @@ Feature: Categorisation
 ```
 
 Edge cases:
-- Categories are a fixed list in v1 (no custom categories), including "Income" and "Transfers" (D-002, D-006, D-007). Custom categories are a later decision.
+- Categories are a fixed list in v1 (no custom categories), including "Income" and "Transfers" (see Fixed lists; D-002, D-006, D-007, D-042). Custom categories are a later decision.
 - An override applies to the stored transactions of the same merchant on request only. It is not remembered for future imports in v1. (D-021) "Same merchant" means the description with digits and reference numbers stripped, lower-cased and trimmed, matched exactly (D-022).
 - Undo window: 10 seconds, held in the config file. (D-033)
 - Two people change the same category at the same moment: last write wins; no locking in v1 without auth.
@@ -390,30 +412,38 @@ Feature: Spending context
   Scenario: Add context to a purchase
     Given a stored transaction
     When I open it
-    Then I can set how I felt, why I bought it and what happened with it, each from a fixed list with an optional note
+    Then I can set how I felt, why I bought it and what happened with it, each from a fixed list, with an optional note
+    And how I felt and why I bought it are required
     When I save
-    Then its context state becomes partial or complete
+    Then its context state becomes complete
 
-  Scenario: Partial context is allowed
-    When I fill in only the mood
-    Then it saves as partial
+  Scenario: Mood and motivation are both required
+    When I choose only the mood
+    Then save is disabled and says why I bought it is needed too
 
-  Scenario: Edit and clear
+  Scenario: Outcome and note are optional
+    Given a transaction with mood and motivation
+    Then I can save without an outcome or a note
+    And I can add the outcome later
+
+  Scenario: Context in the table
     Given a transaction with context
-    When I clear the mood
-    Then the mood is removed
+    Then the table shows a tag for each of mood, motivation and outcome that is set
+    And a "View context" link opens a dialog with the values and the note
+
+  Scenario: Clear context
+    Given a transaction with context
+    When I clear the context
+    Then the whole context is removed
     And I see an undo option for a short time
 
   Scenario: Context too long
-    When I enter more than the maximum length in a free-text field
+    When I enter more than 200 characters in the note
     Then I see the limit and cannot save until it is shortened
 ```
 
 Edge cases:
-- Context has three fields, each one value from a fixed list plus an optional free-text note, so that behaviour charts have something to group by (D-002, D-023). Starter lists, open to editing before building:
-  - How I felt (mood): happy, stressed, bored, sad, anxious, excited, calm, tired.
-  - Why I bought it (motivation): need, planned, habit, impulse, treat, social pressure, deal or sale.
-  - What happened (outcome): glad I bought it, regret it, used it, unused, returned.
+- Context has three fields, each one value from a fixed list, plus one optional free-text note of at most 200 characters, so that behaviour charts have something to group by (D-002, D-023, D-045). The lists are in Fixed lists. Mood and motivation are required, because they are the "why" behind the buy (D-044).
 - Context text containing markup or script: stored as plain text and rendered escaped.
 - Context on an income or refund row: allowed.
 - Missing context is never an error; the list shows a quiet "add context" prompt only.
@@ -446,9 +476,11 @@ Feature: Charts
     And I see how much spending has context, for example "18% of spending (£412 of £2,290) has context"
     And I am prompted to add context to the largest transactions without it
 
-  Scenario: Partial data is honest
-    Given some transactions are uncategorised
-    Then they appear as "Uncategorised" and are included in the total
+  Scenario: Add more context from the coverage measure
+    Given the behaviour view shows "18% of spending has context"
+    When I choose "Add more context"
+    Then I go to the list of my biggest transactions without context
+    And each has an "Add context" action
 
   Scenario: Filtered to nothing
     When I filter to a month with no transactions
@@ -462,6 +494,7 @@ Feature: Charts
 
 Edge cases:
 - Refunds net against the category in which they occurred. (D-033)
+- **[Proposed]** With nine spending categories and only six chart colours that are validated on the dark surface, the charts show the six biggest categories and group the rest as "Smaller categories"; the table view lists every category (D-042).
 - A month is a calendar month (D-025); pay-cycle months are a later option.
 - A month with only income: spending chart is empty with an explanation.
 - Very large single transaction (for example a mortgage payment) dominates the chart: a category filter lets the user hide that category from the view.
@@ -481,7 +514,7 @@ Feature: Demo workflow
     When I open the app
     Then the demo checklist is shown
     And I can dismiss it
-    And I can reopen it from a button in the header
+    And **[Proposed]** a dismissed checklist stays dismissed for my visit and comes back after a reset (there is no header button, D-041)
 
   Scenario: Work through the checklist in any order
     Given the checklist is open
@@ -497,12 +530,12 @@ Feature: Demo workflow
 
   Scenario: Demo data shows incomplete records
     Given demo data is loaded
-    Then some transactions are uncategorised and some have no or partial context
-    So I can see what the prompts to categorise and add context look like
+    Then some transactions have no context
+    So I can see what the prompts to add context look like
 
   Scenario: No checklist in user mode
     Given demo mode is off
-    Then the checklist and its header button are not shown
+    Then the checklist is not shown
 ```
 
 Edge cases:
@@ -510,7 +543,7 @@ Edge cases:
 - Demo user wants to try their own file: not possible in demo mode (D-004); the sample files cover the same states.
 - Demo user hits the AI limit mid-tour: the sample runs through replay instead (stored AI result for that sample, labelled "Replayed result, not a live AI call"), so the walkthrough never dead-ends. (D-010)
 - The guided demo does not simulate app-level failures such as the AI service failing or the database being unavailable. Those states exist in the app (see States) but are not demonstrated for now. (D-028)
-- Stored transactions are always valid, because data is validated at every boundary (ADR-001). The "incomplete" demo rows are uncategorised or missing context, not invalid.
+- Stored transactions are always valid, because data is validated at every boundary (ADR-001). The "incomplete" demo rows are missing context, not invalid. Every stored row has a category (D-037).
 
 #### J10. Reset demo data (Demo user)
 
@@ -524,7 +557,9 @@ Feature: Reset
     When I choose "Reset demo"
     Then I am asked to confirm and told that my demo data will be deleted
     When I confirm
-    Then the app is in the resetting state and then the empty state
+    Then the app is in the resetting state and then on Import, "Choose source" (D-039)
+    And in demo mode "Load demo data" is offered there
+    And this is the same from Insights, Transactions and Import
 
   Scenario: Cancel reset
     When I cancel the confirmation
@@ -533,7 +568,7 @@ Feature: Reset
   Scenario: Demo copy expires
     Given I have not used the app for 24 hours
     Then my demo copy is deleted
-    And my next visit shows the empty state
+    And my next visit shows the empty state (Import, "Choose source")
 
   Scenario: No reset in user mode
     Given demo mode is off
@@ -543,7 +578,7 @@ Feature: Reset
 Edge cases:
 - Reset only affects my own visitor copy, so another visitor's data is never touched (D-005).
 - Reset while an import of mine is in progress (two tabs): the import fails with a clear message rather than saving into a half-empty copy.
-- Reset is not undoable. Undo is limited to category change and context clearing.
+- Reset is not undoable. Undo is limited to category change, edits, and context clearing.
 - The expiry window (24 hours of inactivity) lives in the config file.
 
 #### J11. Two of us using the app (User, partner)
@@ -603,7 +638,7 @@ Feature: Correct a transaction
 
 Edge cases:
 - An edit can move a transaction to another month; charts for both months update.
-- Editing a date to the future is allowed with a warning, as in receipts.
+- Editing a date to the future is allowed with a warning for now, as in receipts. To be revisited: perhaps only scheduled direct debits should allow it (D-047).
 - Changing an amount from negative to positive turns spending into income or a refund; the category is kept and the user is shown a warning.
 - Two tabs editing the same transaction: last write wins (single machine in v1).
 - Editing context or category uses the same table, so a transaction can be fixed in one pass.
@@ -614,4 +649,10 @@ Every decision made while writing this section is recorded in `SPEC-DECISIONS.md
 
 ### Still open
 
-Nothing open from this section. Follow-ups are ADR-001 open decisions 11 to 17.
+Open from the first design review (see `SPEC-DECISIONS.md`):
+- How a dismissed demo checklist is reopened, if at all (D-041).
+- How the charts show nine spending categories with six validated colours (D-042).
+- The landing page when the app has no data, and where "Load demo data" lands (D-039).
+- Whether future dates are allowed, perhaps only for scheduled direct debits (D-047).
+
+Follow-ups are ADR-001 open decisions 11 to 17.
