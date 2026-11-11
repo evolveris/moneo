@@ -80,7 +80,7 @@ There is no single "best" set. A good rule of thumb: start from the recommended 
 
 - Branch protection on GitHub (making CI required to merge): parked by the author for later. Revisit after CI has run a few times.
 - React Testing Library, `jsdom`, Playwright or other component and end-to-end testing. Added when the first component needs a test (async Server Components cannot be unit tested with Vitest anyway).
-- Editor setup files (`.vscode/`), coverage thresholds, dependency update bots.
+- Coverage thresholds, dependency update bots.
 - Fixing the `npm audit` finding that comes in through `shadcn`.
 - Any new application behaviour.
 
@@ -122,5 +122,7 @@ Answers to the plan's open questions (author):
 4. Git hooks: yes, Husky with lint-staged (lint and format on staged files before each commit).
 5. Branch protection: not yet, parked for later.
 6. Env schema: `src/lib/env.ts` for the Neo4j variables only, growing as variables are added.
+
+7. Editor setup (added at the author's request after the plan): `.vscode/extensions.json` recommends the ESLint, Prettier, Tailwind and Vitest extensions, and `.vscode/settings.json` formats on save and applies ESLint fixes on save.
 
 Record anything else decided while building, with a pointer to SPEC-DECISIONS.md or an ADR.
