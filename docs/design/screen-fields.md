@@ -1,0 +1,116 @@
+# Screen fields (draft for validation)
+
+What each screen reads and writes, drawn from the SPEC (D-002, D-006, D-012, D-022, D-023, D-034, D-035) and the draft mockups, plus the round 1 feedback in `feedback-round-1.md`. This is the input for the Zod schemas in slice 04. **Proposed**: nothing here is final until the author has checked it.
+
+Notation: `?` optional, `derived` computed in code and not stored, `system` set by the app, `user` entered or edited by the author. Money is integer pence, negative for spending.
+
+## 1. The stored transaction
+
+| Field | Type | Who sets it | Notes |
+|---|---|---|---|
+| `id` | string | system | Not a bank ID; cannot be relied on for duplicates (D-035) |
+| `visitorId` | string | system | Demo mode: every query is scoped to it |
+| `date` | calendar date (`YYYY-MM-DD`), no time | import, `user` | Must be a real date. A future date is allowed with a warning |
+| `amountPence` | integer | import, `user` | Negative = spending, positive = income or refund. Never a float |
+| `description` | string, non-empty | import, `user` | The raw bank text |
+| `category` | one of 11 (below) | `ai`, `user` | Required once saved (see decision 1) |
+| `categorySource` | `ai` or `user` | system | `uncategorised` goes away if a category is required (decision 1) |
+| `mood` | one of 8, optional | `user` | |
+| `motivation` | one of 9, optional | `user` | |
+| `outcome` | one of 6, optional | `user` | |
+| `note` | string, max length TBD, optional | `user` | Free text, one note per transaction |
+| `original` | `{ date, amountPence, description }` | system | The imported values, kept for duplicate matching and the "edited" marker (D-034, D-035) |
+| `runningBalance` | integer pence, optional | import | Only when the file has one; used in duplicate matching (D-035) |
+| `importId` | string | system | Which import saved it |
+| `sourceType` | `csv`, `pdf` or `receipt` | system | |
+| `createdAt` | timestamp | system | |
+
+**Derived, not stored:**
+- `merchantKey`: description with digits and reference numbers stripped, lower-cased, trimmed (D-022). Used to group and for "apply to the same merchant".
+- `edited`: true when date, amount or description differs from `original`.
+- `contextState`: `none` (no mood, motivation, outcome or note), `partial`, or `complete` (all three of mood, motivation and outcome set).
+- `kind`: `spending` (amount negative, category not Income or Transfers), `income`, `transfer`, `refund`. Decides what the spending charts include (D-006, D-033).
+
+## 2. The lists (fixed in code)
+
+- **Category (11):** Groceries, Eating out, Transport, Housing, Bills and utilities, Subscriptions, Shopping, Health and fitness, Other, Income, Transfers.
+- **Mood (8):** happy, stressed, bored, sad, anxious, excited, calm, tired.
+- **Motivation (9):** need, planned, habit, impulse, treat, social pressure, deal or sale, social media, unwell.
+- **Outcome (6):** glad I bought it, regret it, used it, unused, returned, sold.
+
+## 3. Screens
+
+### Import: choose source
+
+| Reads | Writes |
+|---|---|
+| Mode flag (demo or user), the list of shipped sample files (demo mode), the visitor's remaining AI uploads (`getLimits`) | A chosen sample file (demo) or an uploaded file (user): `fileName`, `fileType`, `sizeBytes` |
+
+Validated before anything else: type (CSV, PDF, image), size (5 MB), PDF pages (10), rows (5,000).
+
+### Import: review
+
+| Reads | Writes |
+|---|---|
+| Review rows (below), summary, balance check | Edits to a row's `date`, `amountPence`, `description`, `category`; row actions skip, include or drop; opening and closing balance (optional); the confirm action |
+
+**Review row** = the transaction fields (without `id`, `visitorId`, `importId`, `createdAt`) plus:
+- `rowState`: `valid`, `needs-fix`, `duplicate`, or `dropped`.
+- `problems`: list of reasons for `needs-fix`, for example "amount is not a number", "currency is not GBP", **"no category"**.
+- `duplicateOf`: the matched stored transaction, when `duplicate`.
+- `include`: for duplicates, whether the user chose to keep it.
+
+**Summary** (derived): row count, date range, money in, money out, net, count per row state.
+
+**Balance check** (optional): `openingBalancePence?`, `closingBalancePence?`. Warning when opening + net ≠ closing. Does not block.
+
+**Confirm button:** "Save N transactions". Disabled when any row is `needs-fix` (this now includes a missing category), or when zero rows are valid, and shows the reason.
+
+### Transactions
+
+| Reads | Writes |
+|---|---|
+| Per row: `date`, `description`, `category`, `mood`, `motivation`, `outcome`, `note` exists?, `amountPence`, `edited`. Filters: month, category, clicked chart segment | Click-to-edit cells: `date`, `description`, `category`, `amountPence`. Opens the context panel. Undo (10 seconds). "Apply to N other transactions from this merchant" |
+
+Columns: Date, Description, Category, Context, Amount.
+- **Context cell:** small tags for the mood and the motivation that are set (for example "happy", "impulse"), and a "View context" link to a dialog. When there is no context, an "Add context" prompt instead.
+- **View context dialog (read only):** date, description, amount, category, mood, motivation, outcome, note, and an "Edit context" action that opens the context panel.
+- **States:** loading, empty, filtered-empty, populated, error.
+
+### Context panel (side panel)
+
+| Reads | Writes |
+|---|---|
+| The transaction's `date`, `description`, `category`, `amountPence`, and current `mood`, `motivation`, `outcome`, `note` | `mood` ("How I felt"), `motivation` ("Why I bought it"), `outcome` ("What happened"), `note`. Clearing a field, with undo |
+
+Each of the three is a pick from its fixed list, or empty. Note: free text, maximum length TBD, validated on save.
+
+### Insights (tab order: Behaviour, By category, 12-month trend)
+
+| Reads | Writes |
+|---|---|
+| Spending transactions (negative amounts, not Income or Transfers, refunds netted); income per month as a separate total; context coverage | The chosen month; the chosen behaviour field (mood, motivation or outcome). Clicking a segment sets filters for the Transactions tab |
+
+- **Behaviour:** for the chosen field, spending total and count per value, plus "No context". Coverage: "N% of spending (£x of £y) has context". The biggest spending transactions without context, each with "Add context".
+- **By category:** for the chosen month, total and share per category, with a table view.
+- **12-month trend:** for the last 12 calendar months, total per month stacked by category, with a table view.
+- Chart colour rule (open): top 5 or 6 categories plus "Other", or more colours.
+
+### Header and app level
+
+| Reads | Writes |
+|---|---|
+| Mode flag; app state (empty, populated, resetting, error); visitor cookie | "Reset demo" (demo mode only): confirms, wipes the visitor's copy, returns to Import on "Choose source" |
+
+Persistent banner "Demo data only." in the deployed demo. "Project repo" link to GitHub.
+
+## 4. Questions to validate
+
+1. **Category required (decision 1).** If every stored transaction has a category, should `categorySource` just be `ai | user`, and is `uncategorised` removed everywhere? The demo data then cannot show uncategorised rows saved, only rows blocked in review.
+2. **Note length:** maximum characters for `note`? I suggest 500.
+3. **One note per transaction**, or separate notes for mood, motivation and outcome? The SPEC says one optional note; the mockup shows one.
+4. **Context state:** is `complete` "mood, motivation and outcome all set", with the note optional?
+5. **Running balance:** keep it as an optional stored field (used for duplicate matching), or only during review?
+6. **Receipts:** a receipt becomes one transaction with the total (D-001). Do we want to store the merchant name as its own field, or just the description?
+7. **Tags in the table:** show mood and motivation only (as in your two examples), or all three including outcome?
+8. **Derived `kind`:** a positive amount categorised as anything other than Income counts as a refund of that category. Right?
