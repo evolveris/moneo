@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup: Context entry (DRAFT)</title>
+<link rel="stylesheet" href="mockup.css">
+<style>
+  .layout { display: grid; grid-template-columns: 1fr 400px; gap: 16px; align-items: start; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: grid; gap: 16px; position: sticky; top: 16px; }
+  .panel-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+  fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; }
+  legend { padding: 0; font-family: var(--font-mono); font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .options { display: flex; flex-wrap: wrap; gap: 6px; }
+  .options label { cursor: pointer; }
+  .options input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .options span { display: inline-block; border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; background: var(--surface-2); }
+  .options input:checked + span { border-color: var(--accent); background: #16263a; }
+  .options input:checked + span::before { content: "✓ "; color: var(--accent); }
+  .options input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+  textarea.field { width: 100%; min-height: 64px; resize: vertical; }
+  .counter { text-align: right; font-size: 12.5px; color: var(--muted); }
+  .counter.over { color: #f2a0a0; }
+  .state-badge { font-size: 12.5px; }
+  .dim { opacity: .45; }
+  .req { font-family: var(--font-body); font-weight: 400; font-size: 12px; color: var(--tag-why-ink); margin-left: 6px; }
+</style>
+</head>
+<body data-initial="none">
+
+<div class="demo-banner demo-only">Demo data only.</div>
+<div id="app-header" data-page="transactions"></div>
+
+<main>
+  <div class="layout">
+    <div class="table-wrap dim" aria-hidden="true">
+      <table class="data">
+        <thead><tr><th>Date</th><th>Description</th><th>Category</th><th class="num">Amount</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">06 Nov 2026</td><td>TESCO STORES 3214</td><td><span class="cat" data-c="groceries">Groceries</span></td><td class="num amount out">£41.07</td></tr>
+          <tr style="background:#20201e"><td class="mono">05 Nov 2026</td><td>PRET A MANGER 0412</td><td><span class="cat" data-c="eating">Eating out</span></td><td class="num amount out">£6.45</td></tr>
+          <tr><td class="mono">05 Nov 2026</td><td>TFL TRAVEL CH</td><td><span class="cat" data-c="transport">Transport</span></td><td class="num amount out">£8.90</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <aside class="panel" aria-label="Transaction details">
+      <div class="panel-head">
+        <div>
+          <h2>PRET A MANGER 0412</h2>
+          <p class="muted mono">05 Nov 2026 · −£6.45 · <span class="cat" data-c="eating">Eating out</span></p>
+        </div>
+        <button class="btn small" aria-label="Close panel">Close</button>
+      </div>
+
+      <div class="row spread">
+        <h3>Why did you spend this?</h3>
+        <span class="chip state-badge">
+          <span data-show="none">No context</span>
+          <span data-show="moodonly">Needs a reason too</span>
+          <span data-show="complete">Complete</span>
+          <span data-show="toolong">Note too long</span>
+          <span data-show="cleared">No context</span>
+        </span>
+      </div>
+
+      <form class="stack" onsubmit="return false">
+        <fieldset>
+          <legend>How I felt <span class="req">required</span></legend>
+          <div class="options">
+            <label><input type="radio" name="mood"><span>happy</span></label>
+            <label><input type="radio" name="mood"><span>stressed</span></label>
+            <label><input type="radio" name="mood"><span>bored</span></label>
+            <label><input type="radio" name="mood"><span>sad</span></label>
+            <label><input type="radio" name="mood"><span>anxious</span></label>
+            <label><input type="radio" name="mood"><span>excited</span></label>
+            <label><input type="radio" name="mood"><span>calm</span></label>
+            <label><input type="radio" name="mood"><span>tired</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Why I bought it <span class="req">required</span></legend>
+          <div class="options">
+            <label><input type="radio" name="why"><span>need</span></label>
+            <label><input type="radio" name="why"><span>planned</span></label>
+            <label><input type="radio" name="why"><span>habit</span></label>
+            <label><input type="radio" name="why"><span>impulse</span></label>
+            <label><input type="radio" name="why"><span>treat</span></label>
+            <label><input type="radio" name="why"><span>social pressure</span></label>
+            <label><input type="radio" name="why"><span>deal or sale</span></label>
+            <label><input type="radio" name="why"><span>social media</span></label>
+            <label><input type="radio" name="why"><span>unwell</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>What happened <span class="hint">(optional, add it later if you like)</span></legend>
+          <div class="options">
+            <label><input type="radio" name="out"><span>glad I bought it</span></label>
+            <label><input type="radio" name="out"><span>regret it</span></label>
+            <label><input type="radio" name="out"><span>used it</span></label>
+            <label><input type="radio" name="out"><span>unused</span></label>
+            <label><input type="radio" name="out"><span>returned</span></label>
+            <label><input type="radio" name="out"><span>sold</span></label>
+          </div>
+        </fieldset>
+
+        <div>
+          <label for="note"><span class="hint">Note (optional)</span></label>
+          <textarea id="note" class="field" data-show="none moodonly complete cleared" placeholder="Anything you want to remember"></textarea>
+          <textarea id="note-long" class="field invalid" data-show="toolong" aria-invalid="true" aria-describedby="note-err">Lunch after the meeting that ran over, then a coffee for someone I did not need to buy one for, and then I kept going back to the same place all week because it was easy and I was tired and did not want to think about food, which is a pattern that I notice every time work gets busy and I should probably plan ahead…</textarea>
+          <div class="counter" data-show="none moodonly complete cleared">0 / 200</div>
+          <div class="counter over" data-show="toolong">312 / 200</div>
+          <div class="error-text" id="note-err" data-show="toolong">Too long. Shorten it to 200 characters to save.</div>
+        </div>
+
+        <div class="hint" data-show="none moodonly cleared">Choose how you felt and why you bought it to save. Those two are the "why" behind the buy.</div>
+
+        <div class="row spread">
+          <button class="btn" type="button">Clear context</button>
+          <div class="row">
+            <button class="btn" type="button">Cancel</button>
+            <button class="btn primary" type="submit" data-show="complete">Save</button>
+            <button class="btn primary" type="submit" data-show="none moodonly toolong cleared" disabled aria-disabled="true">Save</button>
+          </div>
+        </div>
+      </form>
+
+      <details>
+        <summary>Original imported values</summary>
+        <p class="muted mono" style="margin-top:8px">05 Nov 2026 · PRET A MANGER 0412 · −£6.45</p>
+      </details>
+    </aside>
+  </div>
+
+  <p class="draft-note">Decisions shown: each field is one choice from a fixed list plus one shared optional note (D-023); mood and motivation are required to save, outcome and the note are optional, so a transaction has either no context or a complete one (D-044); chips are real radio buttons so the keyboard works, the selected chip shows a tick as well as a colour; clearing context is undoable; the note has a visible 200 character limit that blocks saving when over (D-043). This panel works the same on a phone as a bottom sheet.</p>
+</main>
+
+<div class="toast" data-show="cleared" role="status">
+  <span>Context cleared.</span>
+  <button class="btn small">Undo</button>
+  <span class="timer" aria-hidden="true">10s</span>
+</div>
+
+<div class="mockup-bar">
+  <span class="label">Mockup state:</span>
+  <button data-state-btn="none">No context yet</button>
+  <button data-state-btn="moodonly">Only mood chosen (Save disabled)</button>
+  <button data-state-btn="complete">Complete</button>
+  <button data-state-btn="toolong">Note too long</button>
+  <button data-state-btn="cleared">Cleared + undo</button>
+  <span class="sep"></span>
+  <button id="demo-toggle" aria-pressed="true">Demo layer: on (demo mode)</button>
+</div>
+<script src="mockup.js"></script>
+<script>
+  // Mockup only: pre-tick chips to match the state being shown.
+  (function () {
+    var picks = {
+      moodonly: { mood: 1 },
+      complete: { mood: 0, why: 3 },
+      toolong: { mood: 1, why: 3 }
+    };
+    function apply(state) {
+      document.querySelectorAll(".options input").forEach(function (i) { i.checked = false; });
+      var p = picks[state] || {};
+      Object.keys(p).forEach(function (name) {
+        var radios = document.querySelectorAll('input[name="' + name + '"]');
+        if (radios[p[name]]) radios[p[name]].checked = true;
+      });
+    }
+    document.querySelectorAll("[data-state-btn]").forEach(function (b) {
+      b.addEventListener("click", function () { apply(b.dataset.stateBtn); });
+    });
+    apply(document.body.dataset.state);
+  })();
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Slice 03: Tooling
 
-- Status: in review
+- Status: merged
 - Journeys: none (foundation)
 - Depends on: slice 02 (merged)
 - Branch / PR: `slice-03-tooling` / see the pull request

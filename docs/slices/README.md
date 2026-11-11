@@ -11,7 +11,8 @@ A slice's detailed plan (`NN-name.md`, from `_template.md`) is written only when
 | 00 | App: Next.js, strict TypeScript, Tailwind, shadcn, layout | - | merged |
 | 01 | Deploy: Vercel, preview per pull request, environment variables documented | - | merged |
 | 02 | Database: Neo4j AuraDB connection, server-only client, health check | - | merged |
-| 03 | Tooling: Vitest, lint and format, CI check, Zod installed | - | in review |
+| 03 | Tooling: Vitest, lint and format, CI check, Zod installed | - | merged |
+| 03a | Design: review the draft mockups, decide the lists and fields the domain core needs | J2, J5 to J8 | in review |
 | 04 | Domain core, no UI: money in pence, Zod schemas, category and context lists, mode flag, `getLimits` | shared rules | planned |
 | 05 | Demo data and a read-only list: visitor cookie, per-visitor copy, virtualised table of 5,000 rows | J1 | planned |
 | 06 | CSV import, happy path: parser with RBS preset, basic review, save | J2 | planned |
@@ -24,7 +25,7 @@ A slice's detailed plan (`NN-name.md`, from `_template.md`) is written only when
 | 12 | Charts: category, 12-month trend, behaviour | J8 | planned |
 | 13 | PDF import | J3 | planned |
 | 14 | Receipt import | J4 | planned |
-| 15 | Demo mode: checklist, sample picker, bad files, limits, reset, expiry | J9, J10 | planned |
+| 15 | Demo mode: start button, sample picker, bad files, limits, reset, expiry | J9, J10 | planned |
 
 J11 (two of us) waits for auth and is not sliced yet.
 
