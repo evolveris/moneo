@@ -1,6 +1,6 @@
 # Slice 04: Domain core
 
-- Status: planned
+- Status: in review
 - Journeys: shared rules (no screen)
 - Depends on: slice 03a (merged), slice 03 (Vitest and Zod installed)
 - Branch / PR: `slice-04-domain-core` / filled in when opened
@@ -69,7 +69,7 @@ Everything is pure TypeScript in `src/` with no React and no database. File layo
 
 These need your answer before code starts. Each has a recommendation.
 
-1. **Mode flag: variable name, default and name of the unset case (ADR-001 open decision 16).** The slice index says an environment variable is enough to start. Recommendation: `MONEO_MODE=demo|user`, server-only (no `NEXT_PUBLIC_`), and **when unset or invalid it is `demo`**, so the public deployment can never fall into user mode by forgetting a variable. Local private use sets `MONEO_MODE=user`. Does this settle open decision 16 for now, with the managed flag service left for later?
+1. **Mode flag: variable name, default and name of the unset case (ADR-001 open decision 16).** The slice index says an environment variable is enough to start. Recommendation: `USER_MODE=demo|user`, server-only (no `NEXT_PUBLIC_`), and **when unset or invalid it is `demo`**, so the public deployment can never fall into user mode by forgetting a variable. Local private use sets `USER_MODE=user`. Does this settle open decision 16 for now, with the managed flag service left for later?
 2. **Override variable name.** Recommendation: `MONEO_LIMIT_OVERRIDES='{"visitor-id":{"maxRows":100}}'`.
 3. **Zero amounts and signs.** SPEC says spending is negative and income positive but not what to do with: (a) `amountPence` of 0; (b) a negative amount categorised as Income; (c) a positive amount categorised as Transfers. Recommendation: (a) rejected as a problem ("amount is zero"); (b) kind `spending` is wrong and so is `income`, so the schema rejects it as a `needs-fix` problem; (c) kind `transfer` (Transfers wins in both directions, as a transfer can go either way). Do you agree, or should some of these be allowed?
 4. **`merchantKey` detail.** D-022 says digits and references stripped. Recommendation: remove every run of digits and any token that mixes letters and digits of 6+ characters or looks like a reference, collapse whitespace, lower-case, trim; punctuation is kept. So "TESCO STORES 3214 LONDON" becomes "tesco stores london". Fine for a first version, to be tuned with real sample data in slice 09?
@@ -78,4 +78,18 @@ These need your answer before code starts. Each has a recommendation.
 
 ## Decisions made during the slice
 
-Record anything decided while building, with a pointer to SPEC-DECISIONS.md or an ADR.
+Answers to the open questions (author):
+
+1. Mode flag is `USER_MODE=demo|user`, server-only, defaulting to `demo` when missing or invalid. This settles ADR-001 open decision 16 for now (environment variable); a managed flag service stays possible later.
+2. Overrides come from `USER_LIMIT_OVERRIDES`.
+3. Zero amounts are a problem; negative Income is a problem; Transfers is a transfer in both directions.
+4. `merchantKey` removes only words that are nothing but digits, so `T5SCO` keeps its 5. Mixed letter and digit words stay.
+5. Config in `src/config/limits.ts`, domain code in `src/domain/`.
+6. `summarise` and `checkBalance` are in this slice.
+
+Choices made while building (not in the plan):
+
+- A review row allows `null` for `date`, `amountPence` and `category`, because a row that needs fixing may lack them; the reasons are in `problems`. `rowProblems` is a small pure function that lists those reasons.
+- `summarise`: `rowCount` and `counts` cover every row; money totals and the date range cover only rows that would be saved (valid, or a duplicate the user chose to keep).
+- `getMode` and `getLimits` take an optional `env` argument (default `process.env`) so tests need no global state, as `parseNeo4jEnv` does.
+- The note limit in the schema is the default (200). A per-visitor `noteMaxLength` override is returned by `getLimits` but the schema does not read it; the UI slices decide where to use it.
