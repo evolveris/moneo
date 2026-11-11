@@ -15,15 +15,28 @@ npm run dev
 
 Open http://localhost:3000.
 
+Saving a file updates the browser without a full reload (Fast Refresh). Restart `npm run dev` after changing `.env.local` or `next.config.ts`.
+
 ## Checks
 
 ```bash
+npm run check      # typecheck, lint, format check and tests, in one go
+npm test           # Vitest in watch mode: re-runs tests when you save a file
+npm run format     # fix formatting with Prettier
 npm run build
-npx tsc --noEmit
-npm run lint
 ```
 
-Run `npm run build` first: Next.js generates some types (like `LayoutProps`) during the build.
+| Command                | What it does                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------- |
+| `npm run typecheck`    | Generates Next.js route types, then runs `tsc --noEmit`                                     |
+| `npm run lint`         | ESLint: Next.js, React and Hooks rules, plus type-aware TypeScript rules                    |
+| `npm run format:check` | Prettier, without changing files (`docs/` is left out so the SPEC and ADRs stay as written) |
+| `npm run test:run`     | Vitest once. Tests are `src/**/*.test.ts`, next to the code they test                       |
+
+- Pull requests run all of these plus `npm run build` on GitHub (`.github/workflows/ci.yml`). `next build` does not lint, so CI is what catches lint errors.
+- A Git hook (Husky and lint-staged) runs ESLint and Prettier on the files you commit. It is installed by `npm install`. `git commit --no-verify` skips it, CI does not.
+- Only `src/lib/neo4j.ts` may import `neo4j-driver`. Lint enforces it.
+- After re-adding a shadcn component (it overwrites the file), run `npm run format`.
 
 ## Deploy
 
