@@ -89,7 +89,7 @@ There is no single "best" set. A good rule of thumb: start from the recommended 
 - `package.json`, `package-lock.json`
 - `eslint.config.mjs`
 - `vitest.config.mts` (new)
-- `.prettierrc`, `.prettierignore` (new; ignores `src/components/ui`)
+- `.prettierrc`, `.prettierignore` (new; build output and lockfile only)
 - `.husky/pre-commit` (new) and a `lint-staged` entry in `package.json`
 - `.github/workflows/ci.yml` (new)
 - `src/lib/env.ts` and `src/lib/env.test.ts` (new): `parseNeo4jEnv` and its tests
@@ -116,7 +116,7 @@ None. All six were answered by the author (see below).
 
 Answers to the plan's open questions (author):
 
-1. Prettier: `src/components/ui` is left out, because shadcn copies component source into the repo and overwrites it when a component is re-added or updated. Everything else gets one separate formatting commit.
+1. Prettier: `src/components/ui` is included, so nothing can slip through unformatted. shadcn copies component source into the repo and overwrites it when a component is re-added or updated; if that happens, run `npm run format` afterwards. All files get one separate formatting commit.
 2. Type-aware linting (`recommendedTypeChecked`): yes.
 3. `next build` in CI: yes.
 4. Git hooks: yes, Husky with lint-staged (lint and format on staged files before each commit).
