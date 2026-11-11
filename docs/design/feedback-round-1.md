@@ -66,5 +66,5 @@ Author's answers. Still not applied to the mockups or the SPEC; the SPEC items a
 - **Mood:** unchanged: happy, stressed, bored, sad, anxious, excited, calm, tired.
 - **Motivation:** need, planned, habit, impulse, treat, social pressure, deal or sale, social media, unwell (feeling under the weather, or buying for health reasons).
 - **Outcome:** glad I bought it, regret it, used it, unused, returned, sold.
-- **Categories:** the author's message said "categories:" and then nothing. Still waiting for the list (or the choice to have one proposed).
+- **Spending categories (decided):** Groceries, Eating out, Transport, Housing (rent, mortgage), Bills and utilities, Subscriptions, Shopping, Health and fitness, Other, plus Income and Transfers, which stay out of the spending charts (D-006). Entertainment and Travel were dropped from the proposal. 9 spending categories, 11 in total. Open: how the charts show 9 categories when only six colours are validated on the dark background (show the top 5 or 6 and group the rest as "Other", or add colours and rely on labels and the table view).
 - The mockup text said "impulse buying"; the list value is "impulse". Using the list value.
