@@ -24,25 +24,13 @@
   .counter.over { color: #f2a0a0; }
   .state-badge { font-size: 12.5px; }
   .dim { opacity: .45; }
+  .req { font-family: var(--font-body); font-weight: 400; font-size: 12px; color: var(--tag-why-ink); margin-left: 6px; }
 </style>
 </head>
 <body data-initial="none">
 
 <div class="demo-banner demo-only">Demo data only.</div>
-<header class="app-header">
-  <div class="app-header-inner">
-    <a class="logo" href="#">Moneo</a>
-    <nav class="nav" aria-label="Main">
-      <a href="2-transactions-table.html" aria-current="page">Transactions</a>
-      <a href="4-insights.html">Insights</a>
-      <a href="1-import-review.html">Import</a>
-    </nav>
-    <div class="header-actions demo-only">
-      <button class="btn small">Checklist</button>
-      <button class="btn small danger">Reset demo</button>
-    </div>
-  </div>
-</header>
+<div id="app-header" data-page="transactions"></div>
 
 <main>
   <div class="layout">
@@ -70,16 +58,16 @@
         <h3>Why did you spend this?</h3>
         <span class="chip state-badge">
           <span data-show="none">No context</span>
-          <span data-show="partial">Partial · 1 of 3</span>
-          <span data-show="complete">Complete · 3 of 3</span>
-          <span data-show="toolong">Partial · 1 of 3</span>
-          <span data-show="cleared">Partial · 2 of 3</span>
+          <span data-show="moodonly">Needs a reason too</span>
+          <span data-show="complete">Complete</span>
+          <span data-show="toolong">Note too long</span>
+          <span data-show="cleared">No context</span>
         </span>
       </div>
 
       <form class="stack" onsubmit="return false">
         <fieldset>
-          <legend>How I felt</legend>
+          <legend>How I felt <span class="req">required</span></legend>
           <div class="options">
             <label><input type="radio" name="mood"><span>happy</span></label>
             <label><input type="radio" name="mood"><span>stressed</span></label>
@@ -93,7 +81,7 @@
         </fieldset>
 
         <fieldset>
-          <legend>Why I bought it</legend>
+          <legend>Why I bought it <span class="req">required</span></legend>
           <div class="options">
             <label><input type="radio" name="why"><span>need</span></label>
             <label><input type="radio" name="why"><span>planned</span></label>
@@ -102,35 +90,40 @@
             <label><input type="radio" name="why"><span>treat</span></label>
             <label><input type="radio" name="why"><span>social pressure</span></label>
             <label><input type="radio" name="why"><span>deal or sale</span></label>
+            <label><input type="radio" name="why"><span>social media</span></label>
+            <label><input type="radio" name="why"><span>unwell</span></label>
           </div>
         </fieldset>
 
         <fieldset>
-          <legend>What happened</legend>
+          <legend>What happened <span class="hint">(optional, add it later if you like)</span></legend>
           <div class="options">
             <label><input type="radio" name="out"><span>glad I bought it</span></label>
             <label><input type="radio" name="out"><span>regret it</span></label>
             <label><input type="radio" name="out"><span>used it</span></label>
             <label><input type="radio" name="out"><span>unused</span></label>
             <label><input type="radio" name="out"><span>returned</span></label>
+            <label><input type="radio" name="out"><span>sold</span></label>
           </div>
         </fieldset>
 
         <div>
           <label for="note"><span class="hint">Note (optional)</span></label>
-          <textarea id="note" class="field" data-show="none partial complete cleared" placeholder="Anything you want to remember"></textarea>
+          <textarea id="note" class="field" data-show="none moodonly complete cleared" placeholder="Anything you want to remember"></textarea>
           <textarea id="note-long" class="field invalid" data-show="toolong" aria-invalid="true" aria-describedby="note-err">Lunch after the meeting that ran over, then a coffee for someone I did not need to buy one for, and then I kept going back to the same place all week because it was easy and I was tired and did not want to think about food, which is a pattern that I notice every time work gets busy and I should probably plan ahead…</textarea>
-          <div class="counter" data-show="none partial complete cleared">0 / 200</div>
+          <div class="counter" data-show="none moodonly complete cleared">0 / 200</div>
           <div class="counter over" data-show="toolong">312 / 200</div>
           <div class="error-text" id="note-err" data-show="toolong">Too long. Shorten it to 200 characters to save.</div>
         </div>
+
+        <div class="hint" data-show="none moodonly cleared">Choose how you felt and why you bought it to save. Those two are the "why" behind the buy.</div>
 
         <div class="row spread">
           <button class="btn" type="button">Clear context</button>
           <div class="row">
             <button class="btn" type="button">Cancel</button>
-            <button class="btn primary" type="submit" data-show="none partial complete cleared">Save</button>
-            <button class="btn primary" type="submit" data-show="toolong" disabled aria-disabled="true">Save</button>
+            <button class="btn primary" type="submit" data-show="complete">Save</button>
+            <button class="btn primary" type="submit" data-show="none moodonly toolong cleared" disabled aria-disabled="true">Save</button>
           </div>
         </div>
       </form>
@@ -142,11 +135,11 @@
     </aside>
   </div>
 
-  <p class="draft-note">Draft decisions shown: each field is one choice from a fixed list plus one shared optional note (D-023), chips are real radio buttons so the keyboard works, the selected chip shows a tick as well as a colour, partial context is allowed and saves as "partial", clearing context is undoable, notes have a visible limit and block saving when over. This panel works the same on a phone as a bottom sheet.</p>
+  <p class="draft-note">Decisions shown: each field is one choice from a fixed list plus one shared optional note (D-023); mood and motivation are required to save, outcome and the note are optional, so a transaction has either no context or a complete one (D-044); chips are real radio buttons so the keyboard works, the selected chip shows a tick as well as a colour; clearing context is undoable; the note has a visible 200 character limit that blocks saving when over (D-043). This panel works the same on a phone as a bottom sheet.</p>
 </main>
 
 <div class="toast" data-show="cleared" role="status">
-  <span>Mood cleared.</span>
+  <span>Context cleared.</span>
   <button class="btn small">Undo</button>
   <span class="timer" aria-hidden="true">10s</span>
 </div>
@@ -154,7 +147,7 @@
 <div class="mockup-bar">
   <span class="label">Mockup state:</span>
   <button data-state-btn="none">No context yet</button>
-  <button data-state-btn="partial">Partial</button>
+  <button data-state-btn="moodonly">Only mood chosen (Save disabled)</button>
   <button data-state-btn="complete">Complete</button>
   <button data-state-btn="toolong">Note too long</button>
   <button data-state-btn="cleared">Cleared + undo</button>
@@ -166,10 +159,9 @@
   // Mockup only: pre-tick chips to match the state being shown.
   (function () {
     var picks = {
-      partial: { mood: 1 },
-      complete: { mood: 0, why: 3, out: 0 },
-      toolong: { mood: 1 },
-      cleared: { why: 3, out: 0 }
+      moodonly: { mood: 1 },
+      complete: { mood: 0, why: 3 },
+      toolong: { mood: 1, why: 3 }
     };
     function apply(state) {
       document.querySelectorAll(".options input").forEach(function (i) { i.checked = false; });

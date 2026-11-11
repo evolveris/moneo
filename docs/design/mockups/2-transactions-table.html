@@ -8,9 +8,6 @@
 <style>
   .toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
   .toolbar .grow { flex: 1; min-width: 180px; }
-  .ctx { display: inline-flex; gap: 4px; align-items: center; }
-  .ctx i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--muted); display: inline-block; }
-  .ctx i.on { background: var(--text-2); border-color: var(--text-2); }
   .ctx-prompt { color: var(--muted); font-size: 12.5px; text-decoration: underline dotted; cursor: pointer; }
   .edit-cell { display: grid; gap: 4px; justify-items: end; }
   .orig { font-size: 12px; color: var(--muted); }
@@ -20,20 +17,7 @@
 <body data-initial="populated">
 
 <div class="demo-banner demo-only">Demo data only.</div>
-<header class="app-header">
-  <div class="app-header-inner">
-    <a class="logo" href="#">Moneo</a>
-    <nav class="nav" aria-label="Main">
-      <a href="2-transactions-table.html" aria-current="page">Transactions</a>
-      <a href="4-insights.html">Insights</a>
-      <a href="1-import-review.html">Import</a>
-    </nav>
-    <div class="header-actions demo-only">
-      <button class="btn small">Checklist</button>
-      <button class="btn small danger">Reset demo</button>
-    </div>
-  </div>
-</header>
+<div id="app-header" data-page="transactions"></div>
 
 <main>
   <!-- empty -->
@@ -41,8 +25,8 @@
     <h1>Nothing here yet</h1>
     <p>Bring in a bank statement to see where your money goes, and why.</p>
     <div class="row" style="justify-content:center">
-      <button class="btn primary demo-only">Load demo data</button>
-      <button class="btn">Import a statement</button>
+      <a class="btn primary demo-only" href="4-insights.html" style="text-decoration:none">Load demo data</a>
+      <a class="btn" href="1-import-review.html" style="text-decoration:none">Import a statement</a>
     </div>
     <p class="hint demo-only">In demo mode the import step offers sample files only.</p>
   </section>
@@ -68,7 +52,7 @@
       <input class="field grow" type="search" placeholder="Search description" aria-label="Search description">
       <select class="field" aria-label="Month"><option>All months</option><option>Nov 2026</option></select>
       <select class="field" aria-label="Category"><option>All categories</option><option>Groceries</option></select>
-      <select class="field" aria-label="Context"><option>Any context</option><option>No context</option></select>
+      <select class="field" aria-label="Context"><option>Any context</option><option>Has context</option><option>No context</option></select>
       <button class="btn" data-show="filtered">Clear filters</button>
     </div>
 
@@ -82,7 +66,7 @@
             <td class="col-date mono">06 Nov 2026</td>
             <td class="col-desc">TESCO STORES 3214</td>
             <td class="col-cat"><span class="cat" data-c="groceries">Groceries</span></td>
-            <td class="col-ctx"><span class="ctx" aria-label="Context complete: 3 of 3"><i class="on"></i><i class="on"></i><i class="on"></i></span></td>
+            <td class="col-ctx"><span class="tags"><span class="tag mood" title="Mood">calm</span><span class="tag why" title="Motivation">need</span><span class="tag out" title="Outcome">used</span></span> <button class="link-btn" data-open-dialog="ctx-tesco">View context</button></td>
             <td class="col-amt num amount out">£41.07</td>
           </tr>
 
@@ -94,7 +78,7 @@
               <span data-show="populated editing"><span class="cat" data-c="groceries">Groceries</span></span>
               <span data-show="undo"><span class="cat" data-c="eating">Eating out</span></span>
             </td>
-            <td class="col-ctx"><span class="ctx" aria-label="Context partial: 1 of 3"><i class="on"></i><i></i><i></i></span></td>
+            <td class="col-ctx"><span class="ctx-prompt">add context</span></td>
             <td class="col-amt num">
               <span data-show="populated undo" class="amount out click-edit" tabindex="0" role="button" aria-label="Edit amount">£6.45</span>
               <div class="edit-cell" data-show="editing">
@@ -115,9 +99,16 @@
           <tr>
             <td class="col-date mono">04 Nov 2026</td>
             <td class="col-desc">SQ *KILN AND CO</td>
-            <td class="col-cat"><span class="cat" data-c="none">Uncategorised</span></td>
+            <td class="col-cat"><span class="cat" data-c="eating">Eating out</span></td>
             <td class="col-ctx"><span class="ctx-prompt">add context</span></td>
             <td class="col-amt num amount out">£14.00</td>
+          </tr>
+          <tr>
+            <td class="col-date mono">04 Nov 2026</td>
+            <td class="col-desc">AMZN MKTP UK</td>
+            <td class="col-cat"><span class="cat" data-c="shopping">Shopping</span></td>
+            <td class="col-ctx"><span class="tags"><span class="tag mood" title="Mood">happy</span><span class="tag why" title="Motivation">impulse</span></span> <button class="link-btn" data-open-dialog="ctx-amzn">View context</button></td>
+            <td class="col-amt num amount out">£68.99</td>
           </tr>
           <tr>
             <td class="col-date mono">03 Nov 2026</td>
@@ -129,9 +120,16 @@
           <tr>
             <td class="col-date mono">02 Nov 2026</td>
             <td class="col-desc">OCTOPUS ENERGY DD</td>
-            <td class="col-cat"><span class="cat" data-c="bills">Bills</span></td>
+            <td class="col-cat"><span class="cat" data-c="bills">Bills and utilities</span></td>
             <td class="col-ctx"><span class="ctx-prompt">add context</span></td>
             <td class="col-amt num amount out">£84.20</td>
+          </tr>
+          <tr>
+            <td class="col-date mono">01 Nov 2026</td>
+            <td class="col-desc">JD SPORTS 0098</td>
+            <td class="col-cat"><span class="cat" data-c="shopping">Shopping</span></td>
+            <td class="col-ctx"><span class="tags"><span class="tag mood" title="Mood">sad</span><span class="tag why" title="Motivation">treat</span><span class="tag out" title="Outcome">regret it</span></span> <button class="link-btn" data-open-dialog="ctx-jd">View context</button></td>
+            <td class="col-amt num amount out">£32.00</td>
           </tr>
         </tbody>
       </table>
@@ -144,10 +142,53 @@
     </div>
 
     <p class="draft-note" data-show="populated editing undo">
-      Draft decisions shown: spending as a true minus sign, income with a plus, amounts right-aligned and tabular in SUSE Mono; category chips carry a text label as well as a colour; context shown as three dots (mood, why, outcome) with a quiet "add context" prompt where there is none; "edited" marker; click-to-edit amount validated on commit with the old value kept; narrow screens turn rows into cards (resize the window under 720px).
+      Decisions shown: spending as a true minus sign, income with a plus, amounts right-aligned and tabular in SUSE Mono; category chips carry a text label as well as a colour; context shown as small tags for each of mood, motivation and outcome that is set, with a "View context" link that opens a read-only dialog (try the rows with tags), and a quiet "add context" prompt where there is none (D-042, D-043); every stored row has a category (D-037); "edited" marker; click-to-edit amount validated on commit with the old value kept; narrow screens turn rows into cards (resize the window under 720px) and the context column is left out there.
     </p>
   </section>
 </main>
+
+<dialog id="ctx-tesco" aria-labelledby="ctx-tesco-t">
+  <h2 id="ctx-tesco-t">TESCO STORES 3214</h2>
+  <p class="muted">Context you added for this purchase.</p>
+  <dl class="dl">
+    <dt>Date</dt><dd class="mono">06 Nov 2026</dd>
+    <dt>Amount</dt><dd class="mono">−£41.07</dd>
+    <dt>Category</dt><dd><span class="cat" data-c="groceries">Groceries</span></dd>
+    <dt>How I felt</dt><dd><span class="tag mood">calm</span></dd>
+    <dt>Why I bought it</dt><dd><span class="tag why">need</span></dd>
+    <dt>What happened</dt><dd><span class="tag out">used</span></dd>
+    <dt>Note</dt><dd>Weekly shop, nothing extra.</dd>
+  </dl>
+  <div class="actions"><button class="btn" data-close-dialog>Close</button><a class="btn primary" href="3-context-entry.html" style="text-decoration:none">Edit context</a></div>
+</dialog>
+<dialog id="ctx-amzn" aria-labelledby="ctx-amzn-t">
+  <h2 id="ctx-amzn-t">AMZN MKTP UK</h2>
+  <p class="muted">Context you added for this purchase.</p>
+  <dl class="dl">
+    <dt>Date</dt><dd class="mono">04 Nov 2026</dd>
+    <dt>Amount</dt><dd class="mono">−£68.99</dd>
+    <dt>Category</dt><dd><span class="cat" data-c="shopping">Shopping</span></dd>
+    <dt>How I felt</dt><dd><span class="tag mood">happy</span></dd>
+    <dt>Why I bought it</dt><dd><span class="tag why">impulse</span></dd>
+    <dt>What happened</dt><dd><span class="muted">Not set</span></dd>
+    <dt>Note</dt><dd><span class="muted">No note</span></dd>
+  </dl>
+  <div class="actions"><button class="btn" data-close-dialog>Close</button><a class="btn primary" href="3-context-entry.html" style="text-decoration:none">Edit context</a></div>
+</dialog>
+<dialog id="ctx-jd" aria-labelledby="ctx-jd-t">
+  <h2 id="ctx-jd-t">JD SPORTS 0098</h2>
+  <p class="muted">Context you added for this purchase.</p>
+  <dl class="dl">
+    <dt>Date</dt><dd class="mono">01 Nov 2026</dd>
+    <dt>Amount</dt><dd class="mono">−£32.00</dd>
+    <dt>Category</dt><dd><span class="cat" data-c="shopping">Shopping</span></dd>
+    <dt>How I felt</dt><dd><span class="tag mood">sad</span></dd>
+    <dt>Why I bought it</dt><dd><span class="tag why">treat</span></dd>
+    <dt>What happened</dt><dd><span class="tag out">regret it</span></dd>
+    <dt>Note</dt><dd>Bought trainers after a bad day at work. Haven't worn them once.</dd>
+  </dl>
+  <div class="actions"><button class="btn" data-close-dialog>Close</button><a class="btn primary" href="3-context-entry.html" style="text-decoration:none">Edit context</a></div>
+</dialog>
 
 <div class="toast" data-show="undo" role="status">
   <span>Category changed to <strong>Eating out</strong>.</span>

@@ -33,23 +33,10 @@
   .prompt-row:last-child { border-bottom: 0; }
 </style>
 </head>
-<body data-initial="category">
+<body data-initial="behaviour-mood">
 
 <div class="demo-banner demo-only">Demo data only.</div>
-<header class="app-header">
-  <div class="app-header-inner">
-    <a class="logo" href="#">Moneo</a>
-    <nav class="nav" aria-label="Main">
-      <a href="2-transactions-table.html">Transactions</a>
-      <a href="4-insights.html" aria-current="page">Insights</a>
-      <a href="1-import-review.html">Import</a>
-    </nav>
-    <div class="header-actions demo-only">
-      <button class="btn small">Checklist</button>
-      <button class="btn small danger">Reset demo</button>
-    </div>
-  </div>
-</header>
+<div id="app-header" data-page="insights"></div>
 
 <main>
   <div class="page-head">
@@ -60,10 +47,68 @@
   </div>
 
   <div class="tabs" role="group" aria-label="Insight views">
+    <button data-state-btn="behaviour-mood">Behaviour</button>
     <button data-state-btn="category">By category</button>
     <button data-state-btn="trend">12-month trend</button>
-    <button data-state-btn="behaviour-mood">Behaviour</button>
   </div>
+
+  <!-- ===== Behaviour ===== -->
+  <section data-show="behaviour-mood behaviour-why behaviour-out" class="stack">
+    <div class="row spread">
+      <div class="seg" role="group" aria-label="Group spending by">
+        <button data-state-btn="behaviour-mood">How I felt</button>
+        <button data-state-btn="behaviour-why">Why I bought it</button>
+        <button data-state-btn="behaviour-out">What happened</button>
+      </div>
+      <select class="field" aria-label="Month"><option>November 2026</option></select>
+    </div>
+
+    <div class="card">
+      <div class="row spread">
+        <h2>18% of spending has context</h2>
+        <a class="btn small primary" href="#unexplained" style="text-decoration:none">Add more context</a>
+      </div>
+      <div class="progress" role="img" aria-label="18 percent"><div></div></div>
+      <p class="muted">£412 of £2,290.00. The rest is grouped as "No context", so this view stays honest.</p>
+    </div>
+
+    <div class="card stack">
+      <div class="bars" data-show="behaviour-mood">
+        <div class="bar-row"><div class="bar-label">stressed</div><div class="bar-track"><div class="bar-fill" style="width:7.5%"></div></div><div class="bar-value">£140.00</div></div>
+        <div class="bar-row"><div class="bar-label">bored</div><div class="bar-track"><div class="bar-fill" style="width:4.8%"></div></div><div class="bar-value">£90.00</div></div>
+        <div class="bar-row"><div class="bar-label">happy</div><div class="bar-track"><div class="bar-fill" style="width:4.3%"></div></div><div class="bar-value">£80.00</div></div>
+        <div class="bar-row"><div class="bar-label">tired</div><div class="bar-track"><div class="bar-fill" style="width:3.3%"></div></div><div class="bar-value">£62.00</div></div>
+        <div class="bar-row"><div class="bar-label">calm</div><div class="bar-track"><div class="bar-fill" style="width:2.1%"></div></div><div class="bar-value">£40.00</div></div>
+        <div class="bar-row"><div class="bar-label muted">No context</div><div class="bar-track"><div class="bar-fill" style="width:100%; --fill:var(--c-none)"></div></div><div class="bar-value">£1,878.00</div></div>
+      </div>
+      <div class="bars" data-show="behaviour-why">
+        <div class="bar-row"><div class="bar-label">impulse</div><div class="bar-track"><div class="bar-fill" style="width:8%"></div></div><div class="bar-value">£150.00</div></div>
+        <div class="bar-row"><div class="bar-label">habit</div><div class="bar-track"><div class="bar-fill" style="width:6.4%"></div></div><div class="bar-value">£120.00</div></div>
+        <div class="bar-row"><div class="bar-label">need</div><div class="bar-track"><div class="bar-fill" style="width:3.8%"></div></div><div class="bar-value">£72.00</div></div>
+        <div class="bar-row"><div class="bar-label">treat</div><div class="bar-track"><div class="bar-fill" style="width:3.7%"></div></div><div class="bar-value">£70.00</div></div>
+        <div class="bar-row"><div class="bar-label">social media</div><div class="bar-track"><div class="bar-fill" style="width:1.8%"></div></div><div class="bar-value">£34.00</div></div>
+        <div class="bar-row"><div class="bar-label">unwell</div><div class="bar-track"><div class="bar-fill" style="width:1.1%"></div></div><div class="bar-value">£20.00</div></div>
+        <div class="bar-row"><div class="bar-label muted">No context</div><div class="bar-track"><div class="bar-fill" style="width:100%; --fill:var(--c-none)"></div></div><div class="bar-value">£1,878.00</div></div>
+      </div>
+      <div class="bars" data-show="behaviour-out">
+        <div class="bar-row"><div class="bar-label">regret it</div><div class="bar-track"><div class="bar-fill" style="width:5.3%"></div></div><div class="bar-value">£100.00</div></div>
+        <div class="bar-row"><div class="bar-label">glad I bought it</div><div class="bar-track"><div class="bar-fill" style="width:4.3%"></div></div><div class="bar-value">£80.00</div></div>
+        <div class="bar-row"><div class="bar-label">used it</div><div class="bar-track"><div class="bar-fill" style="width:3.2%"></div></div><div class="bar-value">£60.00</div></div>
+        <div class="bar-row"><div class="bar-label">unused</div><div class="bar-track"><div class="bar-fill" style="width:1.9%"></div></div><div class="bar-value">£36.00</div></div>
+        <div class="bar-row"><div class="bar-label">returned</div><div class="bar-track"><div class="bar-fill" style="width:0.9%"></div></div><div class="bar-value">£18.00</div></div>
+        <div class="bar-row"><div class="bar-label muted">No context</div><div class="bar-track"><div class="bar-fill" style="width:100%; --fill:var(--c-none)"></div></div><div class="bar-value">£1,878.00</div></div>
+      </div>
+      <p class="hint">Bars are scaled to the biggest group, "No context". That is deliberate: it shows how little of your spending you have explained so far.</p>
+    </div>
+
+    <div class="card" id="unexplained">
+      <h2 style="margin-bottom:4px">Add context to your biggest unexplained spending</h2>
+      <p class="muted" style="margin-bottom:8px">A few quick answers here make the chart above more useful.</p>
+      <div class="prompt-row"><div>OCTOPUS ENERGY DD <span class="muted mono">· 02 Nov</span></div><div class="mono">−£84.20</div><button class="btn small">Add context</button></div>
+      <div class="prompt-row"><div>TESCO STORES 3214 <span class="muted mono">· 06 Nov</span></div><div class="mono">−£82.15</div><button class="btn small">Add context</button></div>
+      <div class="prompt-row"><div>AMZN MKTP UK <span class="muted mono">· 28 Oct</span></div><div class="mono">−£68.99</div><button class="btn small">Add context</button></div>
+    </div>
+  </section>
 
   <!-- ===== By category ===== -->
   <section data-show="category category-table filtered" class="stack">
@@ -75,7 +120,7 @@
         <button class="btn small" aria-label="Next month">›</button>
       </div>
       <div class="row">
-        <select class="field" aria-label="Hide a category"><option>Hide a category…</option><option>Bills</option></select>
+        <select class="field" aria-label="Hide a category"><option>Hide a category…</option><option>Bills and utilities</option></select>
         <button class="btn small" data-state-btn="category-table" data-show="category">View as table</button>
         <button class="btn small" data-state-btn="category" data-show="category-table">View as chart</button>
       </div>
@@ -95,7 +140,7 @@
           <div class="bar-value">£640.00</div>
         </div>
         <div class="bar-row clickable" role="listitem">
-          <div class="bar-label"><span class="cat" data-c="bills">Bills</span></div>
+          <div class="bar-label"><span class="cat" data-c="bills">Bills and utilities</span></div>
           <div class="bar-track"><div class="bar-fill" style="width:95.3%; --fill:var(--c-bills)"></div></div>
           <div class="bar-value">£610.00</div>
         </div>
@@ -115,16 +160,16 @@
           <div class="bar-value">£210.00</div>
         </div>
         <div class="bar-row clickable" role="listitem">
-          <div class="bar-label"><span class="cat" data-c="fun">Entertainment</span></div>
-          <div class="bar-track"><div class="bar-fill" style="width:18.8%; --fill:var(--c-fun)"></div></div>
+          <div class="bar-label"><span class="cat" data-c="subs">Subscriptions</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:18.8%; --fill:var(--c-subs)"></div></div>
           <div class="bar-value">£120.00</div>
         </div>
         <div class="bar-row clickable" role="listitem">
-          <div class="bar-label"><span class="cat" data-c="none">Uncategorised</span></div>
+          <div class="bar-label"><span class="cat" data-c="none">Smaller categories</span></div>
           <div class="bar-track"><div class="bar-fill" style="width:12.5%; --fill:var(--c-none)"></div></div>
           <div class="bar-value">£80.00</div>
         </div>
-        <p class="hint">Click a category to see its transactions. Uncategorised spending is included in the total, not hidden.</p>
+        <p class="hint">The six biggest categories get their own colour; the rest are grouped as "Smaller categories" (here Health and fitness £50 and Other £30). Click any bar to see its transactions. Switch to the table to see every category.</p>
       </div>
 
       <div data-show="category-table" class="table-wrap">
@@ -132,12 +177,14 @@
           <thead><tr><th>Category</th><th class="num">Spent</th><th class="num">Share</th></tr></thead>
           <tbody>
             <tr><td>Groceries</td><td class="num mono">£640.00</td><td class="num mono">28%</td></tr>
-            <tr><td>Bills</td><td class="num mono">£610.00</td><td class="num mono">27%</td></tr>
+            <tr><td>Bills and utilities</td><td class="num mono">£610.00</td><td class="num mono">27%</td></tr>
             <tr><td>Eating out</td><td class="num mono">£340.00</td><td class="num mono">15%</td></tr>
             <tr><td>Shopping</td><td class="num mono">£290.00</td><td class="num mono">13%</td></tr>
             <tr><td>Transport</td><td class="num mono">£210.00</td><td class="num mono">9%</td></tr>
-            <tr><td>Entertainment</td><td class="num mono">£120.00</td><td class="num mono">5%</td></tr>
-            <tr><td>Uncategorised</td><td class="num mono">£80.00</td><td class="num mono">3%</td></tr>
+            <tr><td>Subscriptions</td><td class="num mono">£120.00</td><td class="num mono">5%</td></tr>
+            <tr><td>Health and fitness</td><td class="num mono">£50.00</td><td class="num mono">2%</td></tr>
+            <tr><td>Other</td><td class="num mono">£30.00</td><td class="num mono">1%</td></tr>
+            <tr><td>Housing</td><td class="num mono">£0.00</td><td class="num mono">0%</td></tr>
           </tbody>
         </table>
       </div>
@@ -165,61 +212,18 @@
     </div>
   </section>
 
-  <!-- ===== Behaviour ===== -->
-  <section data-show="behaviour-mood behaviour-why" class="stack">
-    <div class="row spread">
-      <div class="seg" role="group" aria-label="Group spending by">
-        <button data-state-btn="behaviour-mood">How I felt</button>
-        <button data-state-btn="behaviour-why">Why I bought it</button>
-      </div>
-      <select class="field" aria-label="Month"><option>November 2026</option></select>
-    </div>
-
-    <div class="card">
-      <h2>18% of spending has context</h2>
-      <div class="progress" role="img" aria-label="18 percent"><div></div></div>
-      <p class="muted">£412 of £2,290.00. The rest is grouped as "No context", so this view stays honest.</p>
-    </div>
-
-    <div class="card stack">
-      <div class="bars" data-show="behaviour-mood">
-        <div class="bar-row"><div class="bar-label">stressed</div><div class="bar-track"><div class="bar-fill" style="width:7.5%"></div></div><div class="bar-value">£140.00</div></div>
-        <div class="bar-row"><div class="bar-label">bored</div><div class="bar-track"><div class="bar-fill" style="width:4.8%"></div></div><div class="bar-value">£90.00</div></div>
-        <div class="bar-row"><div class="bar-label">happy</div><div class="bar-track"><div class="bar-fill" style="width:4.3%"></div></div><div class="bar-value">£80.00</div></div>
-        <div class="bar-row"><div class="bar-label">tired</div><div class="bar-track"><div class="bar-fill" style="width:3.3%"></div></div><div class="bar-value">£62.00</div></div>
-        <div class="bar-row"><div class="bar-label">calm</div><div class="bar-track"><div class="bar-fill" style="width:2.1%"></div></div><div class="bar-value">£40.00</div></div>
-        <div class="bar-row"><div class="bar-label muted">No context</div><div class="bar-track"><div class="bar-fill" style="width:100%; --fill:var(--c-none)"></div></div><div class="bar-value">£1,878.00</div></div>
-      </div>
-      <div class="bars" data-show="behaviour-why">
-        <div class="bar-row"><div class="bar-label">impulse</div><div class="bar-track"><div class="bar-fill" style="width:8%"></div></div><div class="bar-value">£150.00</div></div>
-        <div class="bar-row"><div class="bar-label">habit</div><div class="bar-track"><div class="bar-fill" style="width:6.4%"></div></div><div class="bar-value">£120.00</div></div>
-        <div class="bar-row"><div class="bar-label">need</div><div class="bar-track"><div class="bar-fill" style="width:3.8%"></div></div><div class="bar-value">£72.00</div></div>
-        <div class="bar-row"><div class="bar-label">treat</div><div class="bar-track"><div class="bar-fill" style="width:3.7%"></div></div><div class="bar-value">£70.00</div></div>
-        <div class="bar-row"><div class="bar-label muted">No context</div><div class="bar-track"><div class="bar-fill" style="width:100%; --fill:var(--c-none)"></div></div><div class="bar-value">£1,878.00</div></div>
-      </div>
-      <p class="hint">Bars are scaled to the biggest group, "No context". That is deliberate: it shows how little of your spending you have explained so far.</p>
-    </div>
-
-    <div class="card">
-      <h2 style="margin-bottom:4px">Add context to your biggest unexplained spending</h2>
-      <p class="muted" style="margin-bottom:8px">A few quick answers here make the chart above more useful.</p>
-      <div class="prompt-row"><div>OCTOPUS ENERGY DD <span class="muted mono">· 02 Nov</span></div><div class="mono">−£84.20</div><button class="btn small">Add context</button></div>
-      <div class="prompt-row"><div>TESCO STORES 3214 <span class="muted mono">· 06 Nov</span></div><div class="mono">−£82.15</div><button class="btn small">Add context</button></div>
-      <div class="prompt-row"><div>AMZN MKTP UK <span class="muted mono">· 28 Oct</span></div><div class="mono">−£68.99</div><button class="btn small">Add context</button></div>
-    </div>
-  </section>
-
-  <p class="draft-note">Draft decisions shown: horizontal bars for category (labels and values sit next to every bar, so nothing depends on colour); a "view as table" for every chart; income kept out of the spending chart; uncategorised and "No context" shown as honest groups; a prompt to add context where it matters most. Chart colours are the six fixed category colours, validated for the dark surface with the dataviz palette checker (colour-blind separation is in the 8.4 to 8.7 band, so direct labels and the legend are required, and are present).</p>
+  <p class="draft-note">Decisions shown: Behaviour is the first tab because it is where most time will be spent (D-038); horizontal bars for category (labels and values sit next to every bar, so nothing depends on colour); a "view as table" for every chart; income kept out of the spending chart; "No context" shown as an honest group; the coverage box links to the prompts below with "Add more context". Draft assumption, not decided: with 9 spending categories and only six validated chart colours, the charts show the six biggest and group the rest as "Smaller categories", and the table lists all of them. Chart colours were validated for the dark surface with the dataviz palette checker (colour-blind separation is in the 8.4 to 8.7 band, so direct labels and the legend are required, and are present).</p>
 </main>
 
 <div class="mockup-bar">
   <span class="label">Mockup state:</span>
-  <button data-state-btn="category">Category</button>
+  <button data-state-btn="behaviour-mood">Behaviour: feeling</button>
+  <button data-state-btn="behaviour-why">Behaviour: reason</button>
+  <button data-state-btn="behaviour-out">Behaviour: outcome</button>
+  <button data-state-btn="category">By category</button>
   <button data-state-btn="category-table">Category (table view)</button>
   <button data-state-btn="filtered">Month with no spending</button>
   <button data-state-btn="trend">12-month trend</button>
-  <button data-state-btn="behaviour-mood">Behaviour: feeling</button>
-  <button data-state-btn="behaviour-why">Behaviour: reason</button>
   <span class="sep"></span>
   <button id="demo-toggle" aria-pressed="true">Demo layer: on (demo mode)</button>
 </div>
@@ -230,12 +234,12 @@
     var months = ["Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov"];
     var cats = [
       { n: "Groceries", c: "var(--c-groceries)", v: [610, 580, 560, 620, 590, 600, 570, 640, 610, 600, 620, 640] },
-      { n: "Bills", c: "var(--c-bills)", v: [600, 600, 610, 610, 600, 610, 610, 610, 600, 610, 610, 610] },
+      { n: "Bills and utilities", c: "var(--c-bills)", v: [600, 600, 610, 610, 600, 610, 610, 610, 600, 610, 610, 610] },
       { n: "Eating out", c: "var(--c-eating)", v: [420, 260, 240, 300, 310, 330, 380, 360, 300, 320, 330, 340] },
       { n: "Shopping", c: "var(--c-shopping)", v: [520, 140, 120, 200, 180, 210, 190, 260, 240, 230, 270, 290] },
       { n: "Transport", c: "var(--c-transport)", v: [180, 190, 170, 200, 210, 190, 200, 220, 210, 200, 200, 210] },
-      { n: "Entertainment", c: "var(--c-fun)", v: [150, 90, 80, 100, 110, 120, 140, 130, 110, 100, 110, 120] },
-      { n: "Uncategorised", c: "var(--c-none)", v: [90, 70, 60, 80, 70, 60, 90, 80, 70, 80, 90, 80] }
+      { n: "Subscriptions", c: "var(--c-subs)", v: [150, 90, 80, 100, 110, 120, 140, 130, 110, 100, 110, 120] },
+      { n: "Smaller categories", c: "var(--c-none)", v: [90, 70, 60, 80, 70, 60, 90, 80, 70, 80, 90, 80] }
     ];
     var W = 760, H = 290, L = 48, R = 8, T = 10, B = 28;
     var plotW = W - L - R, plotH = H - T - B, max = 3000;

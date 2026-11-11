@@ -1,5 +1,5 @@
 /* DRAFT mockup styles. Throwaway: not the app's CSS.
-   Dark only (draft decision). Accent colour is a placeholder until the
+   Dark only (draft decision). Accent colours are placeholders until the
    tone and brand questions are answered. */
 
 @import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=SUSE+Mono:wght@400;500;600&display=swap");
@@ -15,6 +15,7 @@
   --muted: #8d8c84;
   --accent: #3987e5; /* placeholder */
   --accent-ink: #0b0b0b;
+  --accent-2: #8b6cf0; /* placeholder, used with --accent for small touches */
 
   /* status: always paired with an icon and a label */
   --good: #0ca30c;
@@ -28,8 +29,16 @@
   --c-transport: #199e70;
   --c-bills: #c98500;
   --c-shopping: #d55181;
-  --c-fun: #008300;
-  --c-none: #6b6a63;
+  --c-subs: #008300;
+  --c-none: #6b6a63; /* categories without their own colour, and "Smaller categories" */
+
+  /* context tags: tinted per kind, always with a text label */
+  --tag-mood: #2c2447;
+  --tag-mood-ink: #cbbcff;
+  --tag-why: #11302f;
+  --tag-why-ink: #8fe0d6;
+  --tag-out: #3a2c10;
+  --tag-out-ink: #f1cf86;
 
   --font-body: "Geist", system-ui, sans-serif;
   --font-mono: "SUSE Mono", ui-monospace, monospace;
@@ -72,18 +81,30 @@ button, select, input, textarea { font: inherit; color: inherit; }
 }
 
 /* ---------- app shell ---------- */
-.app-header { border-bottom: 1px solid var(--border); background: var(--surface); }
+.icon { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.icon.fill { fill: currentColor; stroke: none; }
+.app-header { border-bottom: 1px solid var(--border); background: var(--surface); position: relative; }
+.app-header::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2) 60%, transparent);
+}
 .app-header-inner {
   max-width: 1120px; margin: 0 auto; padding: 0 16px;
-  display: flex; align-items: center; gap: 24px; height: 56px;
+  display: flex; align-items: center; gap: 24px; height: 64px;
 }
-.logo { font-family: var(--font-mono); font-weight: 600; font-size: 18px; color: var(--text); text-decoration: none; }
+.logo { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-weight: 600; font-size: 30px; line-height: 1; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
+.logo-mark { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; color: #fff; font-size: 18px; flex: none; }
 .nav { display: flex; gap: 4px; flex: 1; }
 .nav a {
-  color: var(--text-2); text-decoration: none; padding: 6px 12px; border-radius: 6px;
+  color: var(--text-2); text-decoration: none; padding: 7px 14px; border-radius: 6px;
+  display: inline-flex; align-items: center; gap: 8px;
 }
-.nav a[aria-current="page"] { background: var(--surface-2); color: var(--text); }
-.header-actions { display: flex; gap: 8px; }
+.nav a:hover { background: var(--surface-2); }
+.nav a[aria-current="page"] { background: var(--surface-2); color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
+.nav a[aria-current="page"] .icon { color: var(--accent); }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.header-actions .btn { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.repo-link { color: var(--text-2); }
 main { max-width: 1120px; margin: 0 auto; padding: 24px 16px; }
 .page-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
 .page-head p { color: var(--text-2); margin-top: 4px; }
@@ -94,6 +115,8 @@ main { max-width: 1120px; margin: 0 auto; padding: 24px 16px; }
   padding: 7px 14px; cursor: pointer;
 }
 .btn:hover { border-color: var(--muted); }
+a.btn { text-decoration: none; display: inline-block; }
+a.btn.danger { color: #f2a0a0; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
 .btn.danger { border-color: var(--critical); color: #f2a0a0; }
 .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
@@ -132,8 +155,8 @@ main { max-width: 1120px; margin: 0 auto; padding: 24px 16px; }
 .cat[data-c="transport"] { --dot: var(--c-transport); }
 .cat[data-c="bills"] { --dot: var(--c-bills); }
 .cat[data-c="shopping"] { --dot: var(--c-shopping); }
-.cat[data-c="fun"] { --dot: var(--c-fun); }
-.cat[data-c="none"] { color: var(--muted); }
+.cat[data-c="subs"] { --dot: var(--c-subs); }
+.cat[data-c="none"] { color: var(--text-2); }
 
 /* ---------- table ---------- */
 .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
@@ -146,7 +169,7 @@ table.data td { padding: 9px 12px; border-bottom: 1px solid #262623; vertical-al
 table.data tr:last-child td { border-bottom: 0; }
 table.data tbody tr:hover { background: #20201e; }
 table.data .num { text-align: right; }
-td.amount.out::before { content: "−"; }
+td.amount.out::before, span.amount.out::before { content: "−"; }
 td.amount.in::before { content: "+"; }
 td.amount.in { color: #9bd49b; }
 .click-edit { border-bottom: 1px dashed var(--muted); cursor: text; }
@@ -177,9 +200,41 @@ tr.is-duplicate td { color: var(--text-2); }
 .mockup-bar .sep { flex: 1; }
 .draft-note { color: var(--muted); font-size: 12.5px; margin-top: 12px; }
 
+/* ---------- stepper with icons ---------- */
+.stepper { display: flex; align-items: center; gap: 8px; padding: 0; margin: 0 0 16px; flex-wrap: wrap; list-style: none; color: var(--muted); font-size: 13.5px; }
+.stepper li.step { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 6px; border-radius: 999px; border: 1px solid var(--border); }
+.stepper .step-icon { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); }
+.stepper .step-icon .icon { width: 15px; height: 15px; }
+.stepper li.step[aria-current="step"] { color: var(--text); background: var(--surface-2); border-color: var(--accent); }
+.stepper li.step[aria-current="step"] .step-icon { background: var(--accent); color: var(--accent-ink); }
+.stepper li.step.done { color: var(--text-2); }
+.stepper li.step.done .step-icon { background: #12361b; color: var(--good); }
+.stepper .arrow { color: var(--muted); display: inline-flex; }
+
+/* ---------- context tags ---------- */
+.tags { display: inline-flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+.tag { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12.5px; white-space: nowrap; }
+.tag.mood { background: var(--tag-mood); color: var(--tag-mood-ink); }
+.tag.why { background: var(--tag-why); color: var(--tag-why-ink); }
+.tag.out { background: var(--tag-out); color: var(--tag-out-ink); }
+.link-btn { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; text-decoration: underline; font-size: 12.5px; }
+
+/* ---------- dialogs ---------- */
+dialog { background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 20px; max-width: 460px; width: calc(100% - 32px); box-shadow: 0 16px 48px rgba(0,0,0,.6); }
+dialog::backdrop { background: rgba(0,0,0,.6); }
+dialog h2 { margin-bottom: 4px; }
+dialog .dl { display: grid; grid-template-columns: 110px 1fr; gap: 8px 12px; margin: 14px 0; }
+dialog .dl dt { color: var(--muted); font-size: 13px; }
+dialog .dl dd { margin: 0; }
+dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+
 /* ---------- narrow screens: table rows become cards (draft decision, phone is not v1) ---------- */
 @media (max-width: 720px) {
-  .nav { display: none; }
+  .logo { font-size: 24px; }
+  .app-header-inner { flex-wrap: wrap; height: auto; padding: 10px 16px; gap: 8px 12px; }
+  .logo { margin-right: auto; }
+  .nav { order: 3; flex-basis: 100%; }
+  .nav a { flex: 1; justify-content: center; }
   table.data.responsive thead { display: none; }
   table.data.responsive, table.data.responsive tbody, table.data.responsive tr, table.data.responsive td { display: block; width: 100%; }
   table.data.responsive tr { padding: 10px 12px; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; }
