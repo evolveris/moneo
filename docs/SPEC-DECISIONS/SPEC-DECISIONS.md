@@ -311,7 +311,7 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 
 - Journey: J10, J1
 - Status: decided
-- Answer: "Reset demo" wipes the visitor's whole copy, and it behaves the same from Insights, Transactions and Import. After the confirmation the app returns to Import on "Choose source". In demo mode that step also offers "Load demo data" next to the sample files, so a reset can lead straight back to demo data. The first-visit landing page when there is no data is proposed to be the same view and is marked [Proposed] in the SPEC.
+- Answer: "Reset demo" wipes the visitor's whole copy, and it behaves the same from Insights, Transactions and Import. After the confirmation the app returns to Import on "Choose source". In demo mode that step also offers "Load demo data" next to the sample files, so a reset can lead straight back to demo data. With no data at all the app opens on Import, "Choose source". "Load demo data" stays as it is in the mockups (it opens Insights). The author finds the empty-state flow still slightly unclear, so it will be refined as the screens are built.
 - Affects: SPEC J1, J10, App state
 
 ## D-040: Mood-by-category chart is not added for now
@@ -367,8 +367,8 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 ## D-047: Future dates
 
 - Journey: J4, J12
-- Status: deferred
-- Answer: The SPEC lets a future date through with a warning (receipts, edits). The author's view is that it should probably be allowed only for scheduled direct debits and standing orders. Not decided; revisit when import and editing are built.
+- Status: decided for now
+- Answer: Future dates stay allowed, with a warning (receipts, edits), as the SPEC already says. The author's idea of allowing them only for scheduled direct debits and standing orders is kept for later; revisit when import and editing are built.
 - Affects: SPEC J4, J12
 
 ## D-048: Visual details from the first design review

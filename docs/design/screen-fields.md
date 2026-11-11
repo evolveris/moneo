@@ -10,7 +10,7 @@ Notation: `?` optional, `derived` computed in code and not stored, `system` set 
 |---|---|---|---|
 | `id` | string | system | Not a bank ID; cannot be relied on for duplicates (D-035) |
 | `visitorId` | string | system | Demo mode: every query is scoped to it |
-| `date` | calendar date (`YYYY-MM-DD`), no time | import, `user` | Must be a real date. Future dates: to be decided later (D-047, section 6) |
+| `date` | calendar date (`YYYY-MM-DD`), no time | import, `user` | Must be a real date. Future dates are allowed with a warning for now (D-047) |
 | `amountPence` | integer | import, `user` | Negative = spending, positive = income or refund. Never a float |
 | `description` | string, non-empty | import, `user` | The raw bank text |
 | `category` | one of 11 (section 2) | `ai`, `user` | Required: a row without one cannot be saved (D-037) |
@@ -123,4 +123,4 @@ Nothing open from the questions above.
 
 ## 6. To think about later
 
-- **Future dates.** The draft allowed a future date with a warning (SPEC J4 receipts, J12 edits). The author's view: probably allow it only for direct debits and standing orders that are scheduled, and treat other future dates as a problem. Not decided; revisit when import and editing are built.
+- **Future dates.** Allowed with a warning for now (D-047). The author's idea: allow them only for scheduled direct debits and standing orders, and treat other future dates as a problem. Revisit when import and editing are built.

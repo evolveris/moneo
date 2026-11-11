@@ -102,7 +102,7 @@ Fixed in code. No custom values in v1 (D-002).
 
 | State | Meaning | What the user sees |
 |---|---|---|
-| Empty | No transactions stored | **[Proposed]** The app opens on Import, "Choose source", which offers "Load demo data" (demo mode) or the file picker. Insights and Transactions show an empty state that points to Import (D-039) |
+| Empty | No transactions stored | The app opens on Import, "Choose source", which offers "Load demo data" (demo mode) or the file picker. Insights and Transactions show an empty state that points to Import (D-039) |
 | Populated | At least one transaction | Transaction list and charts |
 | Resetting | Demo data being reset | Disabled actions, progress indicator |
 | Error | Database or server unreachable | Error message with retry; no partial data shown |
@@ -134,7 +134,7 @@ Feature: First visit
   Scenario: Empty app offers a way in
     Given the database holds no transactions
     When I open the app
-    Then I see the empty state, which is the Import page on "Choose source" [Proposed]
+    Then I see the empty state, which is the Import page on "Choose source" (D-039)
     And in demo mode I see "Load demo data" and the sample files, otherwise the file picker
     And I do not see any charts
 
@@ -142,7 +142,7 @@ Feature: First visit
     Given the app is in the empty state
     When I choose "Load demo data"
     Then a copy of the demo transactions is stored for my visitor session only
-    And I land on Insights, the first tab, in the populated state [Proposed]
+    And I land on Insights, the first tab, in the populated state (to be refined)
     And the demo banner is visible
 
   Scenario: Returning visitor whose copy has expired
@@ -296,7 +296,7 @@ Feature: Import receipt photo
 Edge cases:
 - Receipt in a foreign currency: needs-fix, "GBP only".
 - Multiple receipts in one photo, or a receipt cut off: treated as unreadable; the user decides.
-- Receipt dated in the future or years ago: shown as a warning in review, not blocked. Future dates are to be revisited (D-047).
+- Receipt dated in the future or years ago: shown as a warning in review, not blocked. Future dates stay allowed with a warning for now (D-047).
 - Total on the receipt differs from sum of line items: warning, the user picks the total.
 - Line items are out of scope for v1; only the total is saved. A receipt is always its own transaction, never attached to a bank row (D-001). There is no manual entry (D-018), and the review shows no photo next to the proposed transaction (D-019).
 - HEIC or very large photo: converted or rejected with a clear message.
@@ -646,7 +646,7 @@ Feature: Correct a transaction
 
 Edge cases:
 - An edit can move a transaction to another month; charts for both months update.
-- Editing a date to the future is allowed with a warning for now, as in receipts. To be revisited: perhaps only scheduled direct debits should allow it (D-047).
+- Editing a date to the future is allowed with a warning, as in receipts (D-047). To be revisited: perhaps only scheduled direct debits should allow it.
 - Changing an amount from negative to positive turns spending into income or a refund; the category is kept and the user is shown a warning.
 - Two tabs editing the same transaction: last write wins (single machine in v1).
 - Editing context or category uses the same table, so a transaction can be fixed in one pass.
@@ -657,8 +657,6 @@ Every decision made while writing this section is recorded in `SPEC-DECISIONS.md
 
 ### Still open
 
-Open from the first design review (see `SPEC-DECISIONS.md`):
-- The landing page when the app has no data, and where "Load demo data" lands (D-039).
-- Whether future dates are allowed, perhaps only for scheduled direct debits (D-047).
+Nothing blocking from the first design review. To refine as the screens are built: the empty-state flow and where "Load demo data" lands (D-039), and whether future dates should be limited to scheduled direct debits (D-047).
 
 Follow-ups are ADR-001 open decisions 11 to 17.
