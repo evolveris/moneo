@@ -1,9 +1,9 @@
 # Slice 03a: Design
 
-- Status: in progress, design review decisions applied, waiting for the author's review
+- Status: in review
 - Journeys: J2, J5, J6, J7, J8 (screens only; nothing is built)
 - Depends on: slice 03 (merged). Feeds slice 04 (domain core) and every UI slice after it.
-- Branch / PR: `slice-03a-design` / not opened yet
+- Branch / PR: `slice-03a-design` / see the pull request
 
 ## Goal
 
