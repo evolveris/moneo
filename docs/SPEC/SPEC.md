@@ -14,6 +14,45 @@ I’ll know it’s working when I can explain where my money went and why, and w
 2. Category-driven and behaviour-driven expense overview: charts showing where my money goes every month.
 3. UK finance education: plain-language guides to budgeting, private pensions, investment types, HMRC benefits, and mortgages - depending on my specific expenditure behaviour.
 
+### The agentic loop (D-036)
+
+The core of what I want to build, and to own end to end: AI that reads what I wrote about my spending, interprets it into a fixed set of labels, and writes the result back to the database, so the charts can show it. I want to understand every hop, in particular how the data travels to and from the AI, and to build the LangGraph.js workflow myself.
+
+```
+  Neo4j (on Aura)                                  charts
+  transactions, my notes,                             ^
+  mood / motivation / outcome                         |  chart queries read
+        |                                             |  the derived labels
+        |  1. data function reads                     |
+        |     the notes (scoped to the visitor)       |
+        v                                             |
+  LangGraph.js workflow  (server only)                |
+    - build the prompt from the notes                 |
+    - call the model, asking for a fixed label        |
+      list or "unknown"                               |
+        |                                             |
+        |  2. model output (untrusted text)           |
+        v                                             |
+  Zod validates: label is in the fixed list,          |
+  shape is right, otherwise rejected                  |
+        |                                             |
+        |  3. valid result only                       |
+        v                                             |
+  data function writes the derived data  ------------>+
+  (linked to the transaction, marked as AI-made)
+        |
+        v
+  Neo4j (on Aura)
+```
+
+Rules for the loop:
+- The AI never touches the database or the charts. It only receives text from a data function and returns text that Zod checks. Only validated results are written.
+- Output is a fixed label list or "unknown", never free-form labels, so charts keep a stable set of categories (same principle as category choice, D-002, D-012).
+- Derived data is stored back in Neo4j as its own thing, marked as AI-made and kept apart from what I entered, so I can inspect, correct or delete it (D-036).
+- The whole loop is subject to the same usage limits as other AI calls (`getLimits`, D-008).
+
+Status: direction only. The journey, the label list and the scenarios are not written yet, and the data model must leave room for derived data (ADR-001 open decision 1). It comes after the charts.
+
 ## Users
 
 Myself - this app is intended for personal use, by myself and my partner.

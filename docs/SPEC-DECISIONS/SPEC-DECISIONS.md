@@ -282,3 +282,12 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 - Question: A transaction ID cannot be relied on (the expected RBS layout has none; PDFs and receipts never do). How are duplicates found, including after an edit?
 - Answer: Agreed. Match on date, amount and raw description, plus the running balance when the file has one. Transaction ID only as an extra if present. Match by count, so identical rows are not collapsed. Match on the original imported values, kept on each transaction, so edits do not cause re-imports.
 - Affects: SPEC J2, J5, J12; supersedes D-011
+
+## D-036: The agentic loop: AI interprets notes and writes derived data back
+
+- Journey: none yet (new, after J8 charts)
+- Status: decided (direction); journey, label list and scenarios deferred
+- Question: Where does AI sit in the product beyond reading files and categorising? The author wants AI to read their own notes about a purchase, interpret them, and feed the result into the charts.
+- Options: (a) interpret on the fly each time a chart is drawn, nothing stored; (b) store the interpretation back in Neo4j as derived data, linked to the transaction and marked as AI-made.
+- Answer: (b). Workflow: Neo4j (notes) -> data function -> LangGraph.js workflow -> Zod -> data function -> Neo4j (derived data) -> charts. Output is a fixed label list or "unknown". The author wants to build the LangGraph workflow themselves and own the whole flow; this is the main learning goal of the "agentic" part. Privacy of notes sent to the AI provider is not a concern for now (personal app, synthetic demo data).
+- Affects: SPEC product vision ("The agentic loop"); ADR-001 open decisions 1 (data model must leave room for derived data), 9, 14; usage limits (D-008)
