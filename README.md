@@ -48,7 +48,7 @@ The app is hosted on Vercel at https://moneo-neon.vercel.app/.
 
 ## Environment variables
 
-The names the app needs are in `.env.example`. Today these are the three Neo4j ones (see Database below).
+The names the app needs are in `.env.example`. Today these are the three Neo4j ones (see Database below), plus two optional ones: `APP_MODE` (`demo` or `user`; missing or anything else means `demo`) and `USER_LIMIT_OVERRIDES` (JSON keyed by visitor ID, for example `{"visitor-id":{"maxRows":100}}`, read by `getLimits`).
 
 - Locally: copy `.env.example` to `.env.local` and fill in the values. `.env.local` is ignored by git.
 - On Vercel: add the same names under Project, Settings, Environment Variables.
