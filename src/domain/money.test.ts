@@ -31,7 +31,7 @@ describe("parsePounds", () => {
     expect(parsePounds(text)).toBe(pence)
   })
 
-  it("is exact where floats are not", () => {
+  it("gives exact pence for amounts that floating point gets wrong", () => {
     expect(parsePounds("0.29")).toBe(29)
     expect(parsePounds("1.15")).toBe(115)
   })
@@ -47,7 +47,15 @@ describe("parsePounds", () => {
     },
   )
 
-  it("rejects amounts too large to be exact", () => {
+  // Pence must stay a safe integer (at most 2^53 - 1 = 9,007,199,254,740,991
+  // pence, about £90 trillion), or the arithmetic stops being exact.
+  it("accepts the largest amount that is exact", () => {
+    expect(parsePounds("90,071,992,547,409.91")).toBe(Number.MAX_SAFE_INTEGER)
+    expect(parsePounds("-90,071,992,547,409.91")).toBe(-Number.MAX_SAFE_INTEGER)
+  })
+
+  it("rejects one penny more than the largest exact amount", () => {
+    expect(parsePounds("90,071,992,547,409.92")).toBeNull()
     expect(parsePounds("99999999999999999999")).toBeNull()
   })
 })
@@ -63,7 +71,7 @@ describe("formatPence", () => {
     expect(formatPence(pence)).toBe(text)
   })
 
-  it("round trips with parsePounds", () => {
+  it("is undone by parsePounds: formatting then parsing gives the same pence", () => {
     for (const pence of [0, 1, 99, 100, -12345, 98765432]) {
       expect(parsePounds(formatPence(pence))).toBe(pence)
     }

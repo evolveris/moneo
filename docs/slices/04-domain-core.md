@@ -93,3 +93,10 @@ Choices made while building (not in the plan):
 - `summarise`: `rowCount` and `counts` cover every row; money totals and the date range cover only rows that would be saved (valid, or a duplicate the user chose to keep).
 - `getMode` and `getLimits` take an optional `env` argument (default `process.env`) so tests need no global state, as `parseNeo4jEnv` does.
 - The note limit in the schema is the default (200). A per-visitor `noteMaxLength` override is returned by `getLimits` but the schema does not read it; the UI slices decide where to use it.
+
+Changed after review comments on the pull request (author):
+
+- A zero amount is allowed. Empty rows do appear in bank CSV files and change nothing. This reverses answer 3 above for zero only; negative Income is still rejected.
+- Renames: `kind` is `getTransactionKind`, `rowProblems` is `rowProblemList`, `getMode` is `getUserMode`, `checkAmount` is `rejectNegativeIncome`, the description schema is `transactionDescription`.
+- Review row `problems` is a list of codes from an enum (`ProblemSchema`) and not free text, so the screens can write the message. A row in the `valid` state with no date, amount or category is rejected.
+- `contextState` is `complete` only when mood and motivation are both set; a context with only one of them is not complete.

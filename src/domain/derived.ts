@@ -3,6 +3,7 @@ import type {
   BalanceCheck,
   Context,
   ImportSummary,
+  Problem,
   ReviewRow,
   Transaction,
 } from "./schemas"
@@ -31,31 +32,36 @@ export function edited(
   )
 }
 
-// There is no partial state (D-044).
-export function contextState(tx: { context?: Context }): "none" | "complete" {
-  return tx.context ? "complete" : "none"
+// Complete means mood and motivation are both set (D-044). There is no partial
+// state: a context with only one of them is not complete, so it counts as none.
+// (The schema rejects such a context, so it cannot be stored.)
+export function contextState(tx: {
+  context?: Partial<Context>
+}): "none" | "complete" {
+  return tx.context?.mood && tx.context.motivation ? "complete" : "none"
 }
 
 // Decides what the spending charts include (D-006, D-033). A positive amount
 // in any category other than Income is a refund of that category.
-export function kind(tx: Pick<Transaction, "amountPence" | "category">): Kind {
+export function getTransactionKind(
+  tx: Pick<Transaction, "amountPence" | "category">,
+): Kind {
   if (tx.category === "Transfers") return "transfer"
   if (tx.amountPence > 0) return tx.category === "Income" ? "income" : "refund"
   return "spending"
 }
 
-// The reasons a review row cannot be saved yet.
-export function rowProblems(
+// The reasons a review row cannot be saved yet, as a list (empty when none).
+export function rowProblemList(
   row: Pick<ReviewRow, "date" | "amountPence" | "description" | "category">,
-): string[] {
-  const problems: string[] = []
-  if (row.date === null) problems.push("date is not a real date")
-  if (row.amountPence === null) problems.push("amount is not a number")
-  else if (row.amountPence === 0) problems.push("amount is zero")
+): Problem[] {
+  const problems: Problem[] = []
+  if (row.date === null) problems.push("invalid-date")
+  if (row.amountPence === null) problems.push("invalid-amount")
   else if (row.category === "Income" && row.amountPence < 0)
-    problems.push("income cannot be negative")
-  if (row.description.trim() === "") problems.push("description is empty")
-  if (row.category === null) problems.push("no category")
+    problems.push("negative-income")
+  if (row.description.trim() === "") problems.push("empty-description")
+  if (row.category === null) problems.push("no-category")
   return problems
 }
 

@@ -64,8 +64,8 @@ describe("TransactionSchema", () => {
     expect(fails({ amountPence: 12.5 })).toBe(true)
   })
 
-  it("rejects a zero amount", () => {
-    expect(fails({ amountPence: 0 })).toBe(true)
+  it("accepts a zero amount, as empty rows do appear in bank CSV files", () => {
+    expect(fails({ amountPence: 0 })).toBe(false)
   })
 
   it("rejects an empty or blank description", () => {
@@ -138,22 +138,39 @@ describe("ReviewRowSchema", () => {
   }
 
   it.each(["valid", "needs-fix", "duplicate", "dropped"])(
-    "accepts rowState %s",
+    "accepts a complete row in the %s state",
     (rowState) => {
       expect(ReviewRowSchema.safeParse({ ...row, rowState }).success).toBe(true)
     },
   )
 
-  it("accepts a broken row with null date, amount and category", () => {
+  it("accepts a needs-fix row with a null date, amount and category", () => {
     const result = ReviewRowSchema.safeParse({
       ...row,
       date: null,
       amountPence: null,
       category: null,
       rowState: "needs-fix",
-      problems: ["no category"],
+      problems: ["invalid-date", "invalid-amount", "no-category"],
     })
     expect(result.success).toBe(true)
+  })
+
+  it.each([
+    ["date", { date: null }],
+    ["amount", { amountPence: null }],
+    ["category", { category: null }],
+  ])("rejects a valid row with no %s", (_name, patch) => {
+    expect(ReviewRowSchema.safeParse({ ...row, ...patch }).success).toBe(false)
+  })
+
+  it("rejects a problem that is not in the list of problems", () => {
+    const result = ReviewRowSchema.safeParse({
+      ...row,
+      rowState: "needs-fix",
+      problems: ["something odd"],
+    })
+    expect(result.success).toBe(false)
   })
 
   it("rejects an unknown rowState and a float running balance", () => {

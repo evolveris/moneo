@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { DEFAULT_LIMITS } from "@/config/limits"
+import { rowProblemList } from "./derived"
 import {
   CategorySchema,
   MoodSchema,
@@ -38,21 +39,14 @@ export const OriginalSchema = z.object({
 
 export const SourceTypeSchema = z.enum(["csv", "pdf", "receipt"])
 
-const description = z.string().trim().min(1, "Description is empty")
+const transactionDescription = z.string().trim().min(1, "Description is empty")
 
-// Rules that tie the amount to the category: not zero, and Income is never
-// negative.
-function checkAmount(
+// Income is money coming in, so it is never negative. A zero amount is allowed:
+// empty rows do come from bank CSV files and they change nothing.
+function rejectNegativeIncome(
   value: { amountPence: number | null; category: string | null },
   ctx: z.RefinementCtx,
 ) {
-  if (value.amountPence === 0) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["amountPence"],
-      message: "Amount is zero",
-    })
-  }
   if (
     value.category === "Income" &&
     value.amountPence !== null &&
@@ -72,7 +66,7 @@ export const TransactionSchema = z
     visitorId: z.string().min(1),
     date: DateSchema,
     amountPence: PenceSchema,
-    description,
+    description: transactionDescription,
     category: CategorySchema,
     categorySource: z.enum(["ai", "user"]),
     merchantName: z.string().min(1).optional(),
@@ -82,7 +76,7 @@ export const TransactionSchema = z
     sourceType: SourceTypeSchema,
     createdAt: z.iso.datetime(),
   })
-  .superRefine(checkAmount)
+  .superRefine(rejectNegativeIncome)
 
 export const RowStateSchema = z.enum([
   "valid",
@@ -91,24 +85,47 @@ export const RowStateSchema = z.enum([
   "dropped",
 ])
 
+// Why a review row cannot be saved yet. The screen turns each code into text.
+export const ProblemSchema = z.enum([
+  "invalid-date",
+  "invalid-amount",
+  "empty-description",
+  "no-category",
+  "negative-income",
+  "not-gbp",
+])
+
 // A row under review may still be broken, so date, amount and category can be
-// null here. The reasons are in `problems`.
-export const ReviewRowSchema = z.object({
-  date: DateSchema.nullable(),
-  amountPence: PenceSchema.nullable(),
-  description: z.string(),
-  category: CategorySchema.nullable(),
-  categorySource: z.enum(["ai", "user"]).optional(),
-  merchantName: z.string().min(1).optional(),
-  context: ContextSchema.optional(),
-  original: OriginalSchema.optional(),
-  sourceType: SourceTypeSchema,
-  rowState: RowStateSchema,
-  problems: z.array(z.string()),
-  duplicateOf: z.string().min(1).optional(),
-  include: z.boolean().optional(),
-  runningBalance: PenceSchema.optional(),
-})
+// null here. A row in the `valid` state must have none of those gaps; the
+// reasons for a broken row are in `problems`.
+export const ReviewRowSchema = z
+  .object({
+    date: DateSchema.nullable(),
+    amountPence: PenceSchema.nullable(),
+    description: z.string(),
+    category: CategorySchema.nullable(),
+    categorySource: z.enum(["ai", "user"]).optional(),
+    merchantName: z.string().min(1).optional(),
+    context: ContextSchema.optional(),
+    original: OriginalSchema.optional(),
+    sourceType: SourceTypeSchema,
+    rowState: RowStateSchema,
+    problems: z.array(ProblemSchema),
+    // The stored transaction this row looks like, when rowState is "duplicate".
+    duplicateOf: z.string().min(1).optional(),
+    // For a duplicate row: true when the user chose to save it anyway.
+    include: z.boolean().optional(),
+    runningBalance: PenceSchema.optional(),
+  })
+  .superRefine((row, ctx) => {
+    if (row.rowState === "valid" && rowProblemList(row).length > 0) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["rowState"],
+        message: "A row with problems cannot be valid",
+      })
+    }
+  })
 
 export const ImportSummarySchema = z.object({
   rowCount: z.number().int().nonnegative(),
@@ -116,6 +133,7 @@ export const ImportSummarySchema = z.object({
   moneyInPence: PenceSchema,
   moneyOutPence: PenceSchema,
   netPence: PenceSchema,
+  // How many rows are in each state, counting every row in the import.
   counts: z.object({
     valid: z.number().int().nonnegative(),
     "needs-fix": z.number().int().nonnegative(),
@@ -142,6 +160,7 @@ export const BalanceCheckSchema = z.discriminatedUnion("status", [
 export type Context = z.infer<typeof ContextSchema>
 export type Transaction = z.infer<typeof TransactionSchema>
 export type ReviewRow = z.infer<typeof ReviewRowSchema>
+export type Problem = z.infer<typeof ProblemSchema>
 export type RowState = z.infer<typeof RowStateSchema>
 export type ImportSummary = z.infer<typeof ImportSummarySchema>
 export type BalanceInput = z.infer<typeof BalanceInputSchema>

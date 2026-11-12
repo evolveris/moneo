@@ -3,9 +3,9 @@ import {
   checkBalance,
   contextState,
   edited,
-  kind,
+  getTransactionKind,
   merchantKey,
-  rowProblems,
+  rowProblemList,
   summarise,
 } from "./derived"
 import { toPence } from "./money"
@@ -24,46 +24,62 @@ describe("merchantKey", () => {
     expect(merchantKey(input)).toBe(key)
   })
 
-  it("groups the same merchant with different references", () => {
+  // merchantKey is how "apply to the same merchant" finds matching
+  // transactions, so the same shop with a different branch or reference number
+  // must give the same key.
+  it("gives the same key for one merchant with different reference numbers", () => {
     expect(merchantKey("TESCO 1111")).toBe(merchantKey("tesco 2222"))
   })
 })
 
 describe("edited", () => {
-  const tx = {
+  const imported = {
     date: "2026-03-31",
-    amountPence: toPence(-100),
-    description: "A",
-    original: {
-      date: "2026-03-31",
-      amountPence: toPence(-100),
-      description: "A",
-    },
+    amountPence: toPence(-1250),
+    description: "TESCO STORES 3214",
   }
+  const transaction = { ...imported, original: imported }
 
   it("is false when nothing changed", () => {
-    expect(edited(tx)).toBe(false)
+    expect(edited(transaction)).toBe(false)
   })
 
-  it.each([
-    ["date", { date: "2026-03-30" }],
-    ["amount", { amountPence: toPence(-200) }],
-    ["description", { description: "B" }],
-  ])("is true when the %s changed", (_name, patch) => {
-    expect(edited({ ...tx, ...patch })).toBe(true)
+  it("is true when the date was changed", () => {
+    expect(edited({ ...transaction, date: "2026-03-30" })).toBe(true)
+  })
+
+  it("is true when the amount was changed", () => {
+    expect(edited({ ...transaction, amountPence: toPence(-1520) })).toBe(true)
+  })
+
+  it("is true when the description was changed", () => {
+    expect(edited({ ...transaction, description: "Tesco, weekly shop" })).toBe(
+      true,
+    )
   })
 })
 
 describe("contextState", () => {
-  it("is none without context and complete with it", () => {
+  it("is none when there is no context", () => {
     expect(contextState({})).toBe("none")
+  })
+
+  it("is complete when mood and motivation are both set", () => {
     expect(
       contextState({ context: { mood: "happy", motivation: "need" } }),
     ).toBe("complete")
   })
+
+  it("is not complete with a mood but no motivation", () => {
+    expect(contextState({ context: { mood: "happy" } })).toBe("none")
+  })
+
+  it("is not complete with a motivation but no mood", () => {
+    expect(contextState({ context: { motivation: "need" } })).toBe("none")
+  })
 })
 
-describe("kind", () => {
+describe("getTransactionKind", () => {
   it.each([
     [-100, "Groceries", "spending"],
     [-100, "Other", "spending"],
@@ -72,11 +88,13 @@ describe("kind", () => {
     [-100, "Transfers", "transfer"],
     [100, "Transfers", "transfer"],
   ] as const)("%i in %s is %s", (amount, category, expected) => {
-    expect(kind({ amountPence: toPence(amount), category })).toBe(expected)
+    expect(getTransactionKind({ amountPence: toPence(amount), category })).toBe(
+      expected,
+    )
   })
 })
 
-describe("rowProblems", () => {
+describe("rowProblemList", () => {
   const ok = {
     date: "2026-03-31",
     amountPence: toPence(-100),
@@ -84,27 +102,32 @@ describe("rowProblems", () => {
     category: "Groceries" as const,
   }
 
-  it("has none for a good row", () => {
-    expect(rowProblems(ok)).toEqual([])
+  it("is empty for a good row", () => {
+    expect(rowProblemList(ok)).toEqual([])
   })
 
-  it("names each problem", () => {
-    expect(rowProblems({ ...ok, category: null })).toEqual(["no category"])
-    expect(rowProblems({ ...ok, date: null })).toEqual([
-      "date is not a real date",
-    ])
-    expect(rowProblems({ ...ok, amountPence: null })).toEqual([
-      "amount is not a number",
-    ])
-    expect(rowProblems({ ...ok, amountPence: toPence(0) })).toEqual([
-      "amount is zero",
-    ])
-    expect(rowProblems({ ...ok, description: " " })).toEqual([
-      "description is empty",
-    ])
+  it("accepts a zero amount", () => {
+    expect(rowProblemList({ ...ok, amountPence: toPence(0) })).toEqual([])
+  })
+
+  it.each([
+    ["no category", { category: null }, "no-category"],
+    ["no date", { date: null }, "invalid-date"],
+    ["no amount", { amountPence: null }, "invalid-amount"],
+    ["a blank description", { description: " " }, "empty-description"],
+    [
+      "negative income",
+      { category: "Income" as const, amountPence: toPence(-5) },
+      "negative-income",
+    ],
+  ])("reports %s", (_name, patch, problem) => {
+    expect(rowProblemList({ ...ok, ...patch })).toEqual([problem])
+  })
+
+  it("reports every problem a row has", () => {
     expect(
-      rowProblems({ ...ok, category: "Income", amountPence: toPence(-5) }),
-    ).toEqual(["income cannot be negative"])
+      rowProblemList({ ...ok, date: null, category: null, description: "" }),
+    ).toEqual(["invalid-date", "empty-description", "no-category"])
   })
 })
 
@@ -120,7 +143,7 @@ const row = (patch: Partial<ReviewRow>): ReviewRow => ({
 })
 
 describe("summarise", () => {
-  it("is empty for no rows", () => {
+  it("returns zero totals and no date range for an import with no rows", () => {
     expect(summarise([])).toEqual({
       rowCount: 0,
       dateRange: null,

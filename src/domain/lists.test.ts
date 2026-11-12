@@ -32,6 +32,9 @@ describe("fixed lists", () => {
     }
   })
 
+  // The Zod enums are built from the lists above. A value that is not in the
+  // list (a made-up item, or the right word in the wrong case) must be
+  // rejected, and a listed value accepted.
   it("are enforced by the schemas", () => {
     expect(CategorySchema.safeParse("Holidays").success).toBe(false)
     expect(CategorySchema.safeParse("groceries").success).toBe(false)

@@ -15,23 +15,30 @@ describe("DEFAULT_LIMITS", () => {
   })
 })
 
+// Visitor IDs come from the visitor cookie. These two are made-up examples:
+// one has an override in USER_LIMIT_OVERRIDES, the other does not.
+const visitorWithOverride = "visitor-with-override"
+const otherVisitor = "other-visitor"
+
 describe("getLimits", () => {
   it("returns the defaults with no overrides", () => {
-    expect(getLimits("v1", {})).toEqual(DEFAULT_LIMITS)
-    expect(getLimits("v1", { USER_LIMIT_OVERRIDES: "" })).toEqual(
-      DEFAULT_LIMITS,
-    )
+    expect(getLimits(visitorWithOverride, {})).toEqual(DEFAULT_LIMITS)
+    expect(
+      getLimits(visitorWithOverride, { USER_LIMIT_OVERRIDES: "" }),
+    ).toEqual(DEFAULT_LIMITS)
   })
 
   it("overrides one field for one visitor only", () => {
     const env = {
-      USER_LIMIT_OVERRIDES: JSON.stringify({ v1: { aiUploadsPerHour: 50 } }),
+      USER_LIMIT_OVERRIDES: JSON.stringify({
+        [visitorWithOverride]: { aiUploadsPerHour: 50 },
+      }),
     }
-    expect(getLimits("v1", env)).toEqual({
+    expect(getLimits(visitorWithOverride, env)).toEqual({
       ...DEFAULT_LIMITS,
       aiUploadsPerHour: 50,
     })
-    expect(getLimits("v2", env)).toEqual(DEFAULT_LIMITS)
+    expect(getLimits(otherVisitor, env)).toEqual(DEFAULT_LIMITS)
   })
 
   it("does not read inherited object keys as visitors", () => {
@@ -40,21 +47,22 @@ describe("getLimits", () => {
   })
 
   it("throws on malformed JSON without echoing it", () => {
-    const run = () => getLimits("v1", { USER_LIMIT_OVERRIDES: "{secret" })
+    const run = () =>
+      getLimits(visitorWithOverride, { USER_LIMIT_OVERRIDES: "{secret" })
     expect(run).toThrow("USER_LIMIT_OVERRIDES")
     expect(run).not.toThrow("secret")
   })
 
   it.each([
-    '{"v1":{"maxRows":"100"}}',
-    '{"v1":{"maxRows":1.5}}',
-    '{"v1":{"maxRows":0}}',
-    '{"v1":{"unknown":1}}',
+    '{"visitor-a":{"maxRows":"100"}}',
+    '{"visitor-a":{"maxRows":1.5}}',
+    '{"visitor-a":{"maxRows":0}}',
+    '{"visitor-a":{"unknown":1}}',
     "[]",
-    '{"v1":5}',
-  ])("throws on %s", (raw) => {
-    expect(() => getLimits("v1", { USER_LIMIT_OVERRIDES: raw })).toThrow(
-      "USER_LIMIT_OVERRIDES",
-    )
+    '{"visitor-a":5}',
+  ])("throws on %s", (overridesJson) => {
+    expect(() =>
+      getLimits("visitor-a", { USER_LIMIT_OVERRIDES: overridesJson }),
+    ).toThrow("USER_LIMIT_OVERRIDES")
   })
 })

@@ -18,11 +18,11 @@ const overridesSchema = z.record(
 )
 
 function readOverrides(env: Record<string, string | undefined>) {
-  const raw = env.USER_LIMIT_OVERRIDES
-  if (!raw) return {}
+  const overridesJson = env.USER_LIMIT_OVERRIDES
+  if (!overridesJson) return {}
   let json: unknown
   try {
-    json = JSON.parse(raw)
+    json = JSON.parse(overridesJson)
   } catch {
     throw new Error("USER_LIMIT_OVERRIDES is not valid JSON.")
   }
