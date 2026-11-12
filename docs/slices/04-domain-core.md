@@ -99,6 +99,6 @@ Changed after review comments on the pull request (author):
 - A zero amount is allowed. Empty rows do appear in bank CSV files and change nothing. This reverses answer 3 above for zero only; negative Income is still rejected.
 - Renames: `kind` is `getTransactionKind`, `rowProblems` is `rowProblemList`, `getMode` is `getAppMode`, `checkAmount` is `rejectNegativeIncome`, the description schema is `transactionDescription`.
 - Review row `problems` is a list of codes from an enum (`ProblemSchema`) and not free text, so the screens can write the message. A row in the `valid` state with no date, amount or category is rejected.
-- `contextState` is `complete` only when mood and motivation are both set; a context with only one of them is not complete.
+- `contextState` takes only a valid `Context`, which is always complete, so it returns `none` or `complete`. A context with only a mood or only a motivation is rejected by `ContextSchema` (tested there), not handled in `contextState`.
 - A zero amount has its own transaction kind, `zero`, so it is left out of spending, income, transfer and refund totals and counts.
 - `parsePounds` returns `{ ok: true, pence }` or `{ ok: false, reason }` with the reason `not-a-number`, `too-many-decimals` or `too-large`, so the CSV parser can say why a cell was rejected.

@@ -69,14 +69,6 @@ describe("contextState", () => {
       contextState({ context: { mood: "happy", motivation: "need" } }),
     ).toBe("complete")
   })
-
-  it("is not complete with a mood but no motivation", () => {
-    expect(contextState({ context: { mood: "happy" } })).toBe("none")
-  })
-
-  it("is not complete with a motivation but no mood", () => {
-    expect(contextState({ context: { motivation: "need" } })).toBe("none")
-  })
 })
 
 describe("getTransactionKind", () => {

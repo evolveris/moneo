@@ -32,13 +32,11 @@ export function edited(
   )
 }
 
-// Complete means mood and motivation are both set (D-044). There is no partial
-// state: a context with only one of them is not complete, so it counts as none.
-// (The schema rejects such a context, so it cannot be stored.)
-export function contextState(tx: {
-  context?: Partial<Context>
-}): "none" | "complete" {
-  return tx.context?.mood && tx.context.motivation ? "complete" : "none"
+// A transaction has no context or a complete one (D-044). The Context type
+// is always complete, because ContextSchema rejects a context with only a mood
+// or only a motivation, so no partial state is possible here.
+export function contextState(tx: { context?: Context }): "none" | "complete" {
+  return tx.context ? "complete" : "none"
 }
 
 // Decides what the spending charts include (D-006, D-033). A positive amount
