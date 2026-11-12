@@ -145,7 +145,7 @@ describe("summarise", () => {
       moneyInPence: 0,
       moneyOutPence: 0,
       netPence: 0,
-      counts: { valid: 0, "needs-fix": 0, duplicate: 0, dropped: 0 },
+      rowCountByState: { valid: 0, "needs-fix": 0, duplicate: 0, dropped: 0 },
     })
   })
 
@@ -166,7 +166,7 @@ describe("summarise", () => {
         date: "2026-03-25",
         amountPence: toPence(-700),
         rowState: "duplicate",
-        include: true,
+        includeDuplicate: true,
       }),
       row({
         date: "2026-01-01",
@@ -181,7 +181,7 @@ describe("summarise", () => {
       moneyInPence: 250000,
       moneyOutPence: -1700,
       netPence: 248300,
-      counts: { valid: 2, "needs-fix": 1, duplicate: 2, dropped: 1 },
+      rowCountByState: { valid: 2, "needs-fix": 1, duplicate: 2, dropped: 1 },
     })
   })
 })

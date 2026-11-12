@@ -192,7 +192,7 @@ describe("summary and balance schemas", () => {
         moneyInPence: 0,
         moneyOutPence: 0,
         netPence: 0,
-        counts: { valid: 0, "needs-fix": 0, duplicate: 0, dropped: 0 },
+        rowCountByState: { valid: 0, "needs-fix": 0, duplicate: 0, dropped: 0 },
       }).success,
     ).toBe(true)
     expect(BalanceCheckSchema.safeParse({ status: "ok" }).success).toBe(true)

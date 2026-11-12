@@ -114,7 +114,7 @@ export const ReviewRowSchema = z
     // The stored transaction this row looks like, when rowState is "duplicate".
     duplicateOf: z.string().min(1).optional(),
     // For a duplicate row: true when the user chose to save it anyway.
-    include: z.boolean().optional(),
+    includeDuplicate: z.boolean().optional(),
     runningBalance: PenceSchema.optional(),
   })
   .superRefine((row, ctx) => {
@@ -134,7 +134,7 @@ export const ImportSummarySchema = z.object({
   moneyOutPence: PenceSchema,
   netPence: PenceSchema,
   // How many rows are in each state, counting every row in the import.
-  counts: z.object({
+  rowCountByState: z.object({
     valid: z.number().int().nonnegative(),
     "needs-fix": z.number().int().nonnegative(),
     duplicate: z.number().int().nonnegative(),

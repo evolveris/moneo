@@ -30,7 +30,7 @@ Everything is pure TypeScript in `src/` with no React and no database. File layo
 - **Zod schemas** (`src/domain/schemas.ts`):
   - `Transaction`: `date` as a real calendar date string `YYYY-MM-DD` (rejects `2026-02-30`), `amountPence` integer, non-empty `description`, `category`, `categorySource` (`ai | user`), optional `merchantName`, optional `context`, `original`, `importId`, `sourceType` (`csv | pdf | receipt`), plus `id`, `visitorId`, `createdAt`.
   - `Context`: required `mood` and `motivation`, optional `outcome`, optional `note` of at most the configured length.
-  - `ReviewRow`: the transaction fields minus `id`, `visitorId`, `importId`, `createdAt`, plus `rowState` (`valid | needs-fix | duplicate | dropped`), `problems`, `duplicateOf`, `include`, optional `runningBalance`.
+  - `ReviewRow`: the transaction fields minus `id`, `visitorId`, `importId`, `createdAt`, plus `rowState` (`valid | needs-fix | duplicate | dropped`), `problems`, `duplicateOf`, `includeDuplicate`, optional `runningBalance`.
   - `ImportSummary` and `BalanceCheck` (optional opening and closing balance in pence).
   - Types exported with `z.infer`, so there is one definition.
 - **Derived values** (`src/domain/derived.ts`), each a pure function: `merchantKey`, `edited`, `contextState` (`none | complete`), `kind` (`spending | income | transfer | refund`). Also `summarise(rows)` and `checkBalance(opening, closing, net)` for the summary and balance check in the screen fields, since slice 07 needs them and they are pure. (Say if you would rather leave these two to slice 07.)
@@ -90,7 +90,7 @@ Answers to the open questions (author):
 Choices made while building (not in the plan):
 
 - A review row allows `null` for `date`, `amountPence` and `category`, because a row that needs fixing may lack them; the reasons are in `problems`. `rowProblems` is a small pure function that lists those reasons.
-- `summarise`: `rowCount` and `counts` cover every row; money totals and the date range cover only rows that would be saved (valid, or a duplicate the user chose to keep).
+- `summarise`: `rowCount` and `rowCountByState` cover every row; money totals and the date range cover only rows that would be saved (valid, or a duplicate the user chose to keep).
 - `getMode` and `getLimits` take an optional `env` argument (default `process.env`) so tests need no global state, as `parseNeo4jEnv` does.
 - The note limit in the schema is the default (200). A per-visitor `noteMaxLength` override is returned by `getLimits` but the schema does not read it; the UI slices decide where to use it.
 
@@ -102,3 +102,4 @@ Changed after review comments on the pull request (author):
 - `contextState` takes only a valid `Context`, which is always complete, so it returns `none` or `complete`. A context with only a mood or only a motivation is rejected by `ContextSchema` (tested there), not handled in `contextState`.
 - A zero amount has its own transaction kind, `zero`, so it is left out of spending, income, transfer and refund totals and counts.
 - `parsePounds` returns `{ ok: true, pence }` or `{ ok: false, reason }` with the reason `not-a-number`, `too-many-decimals` or `too-large`, so the CSV parser can say why a cell was rejected.
+- Renames from review: `include` is `includeDuplicate` and the summary `counts` is `rowCountByState`. `docs/design/screen-fields.md` still says `include`; it is a design input, so it was left as written.

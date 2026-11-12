@@ -67,22 +67,22 @@ export function rowProblemList(
 }
 
 // Rows with a state that will be saved: valid, or a duplicate the user chose
-// to keep. Totals count only those; `rowCount` and `counts` count every row.
+// to keep. Totals count only those; `rowCount` and `rowCountByState` count every row.
 function willSave(row: ReviewRow): boolean {
   return (
     row.rowState === "valid" ||
-    (row.rowState === "duplicate" && row.include === true)
+    (row.rowState === "duplicate" && row.includeDuplicate === true)
   )
 }
 
 export function summarise(rows: ReviewRow[]): ImportSummary {
-  const counts = { valid: 0, "needs-fix": 0, duplicate: 0, dropped: 0 }
+  const rowCountByState = { valid: 0, "needs-fix": 0, duplicate: 0, dropped: 0 }
   let moneyIn = 0
   let moneyOut = 0
   let from: string | null = null
   let to: string | null = null
   for (const row of rows) {
-    counts[row.rowState] += 1
+    rowCountByState[row.rowState] += 1
     if (!willSave(row)) continue
     if (row.amountPence !== null) {
       if (row.amountPence > 0) moneyIn += row.amountPence
@@ -99,7 +99,7 @@ export function summarise(rows: ReviewRow[]): ImportSummary {
     moneyInPence: toPence(moneyIn),
     moneyOutPence: toPence(moneyOut),
     netPence: toPence(moneyIn + moneyOut),
-    counts,
+    rowCountByState,
   }
 }
 
