@@ -17,6 +17,11 @@ describe("toPence", () => {
 })
 
 describe("parsePounds", () => {
+  const pence = (text: string) => {
+    const result = parsePounds(text)
+    return result.ok ? result.pence : result.reason
+  }
+
   it.each([
     ["12.34", 1234],
     ["12", 1200],
@@ -27,37 +32,49 @@ describe("parsePounds", () => {
     ["0.1", 10],
     ["0.07", 7],
     ["1,234,567.89", 123456789],
-  ])("reads %s as %i pence", (text, pence) => {
-    expect(parsePounds(text)).toBe(pence)
+  ])("reads %s as %i pence", (text, expected) => {
+    expect(pence(text)).toBe(expected)
   })
 
   it("gives exact pence for amounts that floating point gets wrong", () => {
-    expect(parsePounds("0.29")).toBe(29)
-    expect(parsePounds("1.15")).toBe(115)
+    expect(pence("0.29")).toBe(29)
+    expect(pence("1.15")).toBe(115)
   })
 
   it("returns 0 for -0.00, not negative zero", () => {
-    expect(Object.is(parsePounds("-0.00"), 0)).toBe(true)
+    expect(Object.is(pence("-0.00"), 0)).toBe(true)
   })
 
-  it.each(["", "abc", "1.234", "1,23", "12.", ".5", "1e5", "NaN", "$5", "--5"])(
-    "rejects %j",
+  it.each(["", "abc", "1,23", "12.", ".5", "1e5", "NaN", "$5", "--5"])(
+    "says %j is not a number",
     (text) => {
-      expect(parsePounds(text)).toBeNull()
+      expect(parsePounds(text)).toEqual({ ok: false, reason: "not-a-number" })
+    },
+  )
+
+  it.each(["1.234", "0.001", "12.3456"])(
+    "says %j has too many decimals",
+    (text) => {
+      expect(parsePounds(text)).toEqual({
+        ok: false,
+        reason: "too-many-decimals",
+      })
     },
   )
 
   // Pence must stay a safe integer (at most 2^53 - 1 = 9,007,199,254,740,991
   // pence, about £90 trillion), or the arithmetic stops being exact.
   it("accepts the largest amount that is exact", () => {
-    expect(parsePounds("90,071,992,547,409.91")).toBe(Number.MAX_SAFE_INTEGER)
-    expect(parsePounds("-90,071,992,547,409.91")).toBe(-Number.MAX_SAFE_INTEGER)
+    expect(pence("90,071,992,547,409.91")).toBe(Number.MAX_SAFE_INTEGER)
+    expect(pence("-90,071,992,547,409.91")).toBe(-Number.MAX_SAFE_INTEGER)
   })
 
-  it("rejects one penny more than the largest exact amount", () => {
-    expect(parsePounds("90,071,992,547,409.92")).toBeNull()
-    expect(parsePounds("99999999999999999999")).toBeNull()
-  })
+  it.each(["90,071,992,547,409.92", "99999999999999999999"])(
+    "says %j is too large to be exact",
+    (text) => {
+      expect(parsePounds(text)).toEqual({ ok: false, reason: "too-large" })
+    },
+  )
 })
 
 describe("formatPence", () => {
@@ -73,7 +90,7 @@ describe("formatPence", () => {
 
   it("is undone by parsePounds: formatting then parsing gives the same pence", () => {
     for (const pence of [0, 1, 99, 100, -12345, 98765432]) {
-      expect(parsePounds(formatPence(pence))).toBe(pence)
+      expect(parsePounds(formatPence(pence))).toEqual({ ok: true, pence })
     }
   })
 })

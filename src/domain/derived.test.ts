@@ -87,6 +87,9 @@ describe("getTransactionKind", () => {
     [100, "Groceries", "refund"],
     [-100, "Transfers", "transfer"],
     [100, "Transfers", "transfer"],
+    [0, "Groceries", "zero"],
+    [0, "Income", "zero"],
+    [0, "Transfers", "zero"],
   ] as const)("%i in %s is %s", (amount, category, expected) => {
     expect(getTransactionKind({ amountPence: toPence(amount), category })).toBe(
       expected,

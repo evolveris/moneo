@@ -13,10 +13,15 @@ export function toPence(value: number): Pence {
   return (value === 0 ? 0 : value) as Pence // avoids -0
 }
 
+export type AmountProblem = "not-a-number" | "too-many-decimals" | "too-large"
+
+export type ParsedAmount =
+  { ok: true; pence: Pence } | { ok: false; reason: AmountProblem }
+
 // Accepts "12.34", "-£1,200.50", "+5", "£5.5" and "(5.00)" (a bracket means
-// negative). Returns null when the text is not an amount with at most two
-// decimal places.
-export function parsePounds(text: string): Pence | null {
+// negative). A bad amount is an expected case when reading a CSV, so it comes
+// back as a reason and not as an exception.
+export function parsePounds(text: string): ParsedAmount {
   let s = text.trim()
   let negative = false
   if (s.startsWith("(") && s.endsWith(")")) {
@@ -30,11 +35,14 @@ export function parsePounds(text: string): Pence | null {
     s = s.slice(1).trim()
   }
   if (s.startsWith("£")) s = s.slice(1).trim()
-  if (!/^(\d{1,3}(,\d{3})+|\d+)(\.\d{1,2})?$/.test(s)) return null
-  const [whole, fraction = ""] = s.replaceAll(",", "").split(".")
-  const pence = Number(whole) * 100 + Number(fraction.padEnd(2, "0"))
-  if (!Number.isSafeInteger(pence)) return null
-  return toPence(negative ? -pence : pence)
+  const match = /^(\d{1,3}(,\d{3})+|\d+)(?:\.(\d+))?$/.exec(s)
+  if (!match) return { ok: false, reason: "not-a-number" }
+  const [, whole = "", , decimals = ""] = match
+  if (decimals.length > 2) return { ok: false, reason: "too-many-decimals" }
+  const pence =
+    Number(whole.replaceAll(",", "")) * 100 + Number(decimals.padEnd(2, "0"))
+  if (!Number.isSafeInteger(pence)) return { ok: false, reason: "too-large" }
+  return { ok: true, pence: toPence(negative ? -pence : pence) }
 }
 
 // -1234 becomes "-£12.34".

@@ -8,7 +8,7 @@ import type {
   Transaction,
 } from "./schemas"
 
-export type Kind = "spending" | "income" | "transfer" | "refund"
+export type Kind = "spending" | "income" | "transfer" | "refund" | "zero"
 
 // Digits and references stripped, lower-cased, trimmed (D-022). Only a word
 // that is nothing but digits is removed, so "T5SCO" keeps its 5.
@@ -42,10 +42,13 @@ export function contextState(tx: {
 }
 
 // Decides what the spending charts include (D-006, D-033). A positive amount
-// in any category other than Income is a refund of that category.
+// in any category other than Income is a refund of that category. A zero
+// amount (empty rows do appear in bank CSV files) is its own kind, so it is
+// left out of every total and count.
 export function getTransactionKind(
   tx: Pick<Transaction, "amountPence" | "category">,
 ): Kind {
+  if (tx.amountPence === 0) return "zero"
   if (tx.category === "Transfers") return "transfer"
   if (tx.amountPence > 0) return tx.category === "Income" ? "income" : "refund"
   return "spending"
