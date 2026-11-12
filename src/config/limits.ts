@@ -7,6 +7,6 @@ export const DEFAULT_LIMITS = {
   maxPdfPages: 10,
   maxRows: 5_000,
   aiUploadsPerHour: 5,
-}
+};
 
-export type Limits = typeof DEFAULT_LIMITS
+export type Limits = typeof DEFAULT_LIMITS;
