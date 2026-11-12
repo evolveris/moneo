@@ -11,8 +11,6 @@ import {
 import { toPence } from "./money"
 import type { ReviewRow } from "./schemas"
 
-const p = toPence
-
 describe("merchantKey", () => {
   it.each([
     ["TESCO STORES 3214 LONDON", "tesco stores london"],
@@ -34,9 +32,13 @@ describe("merchantKey", () => {
 describe("edited", () => {
   const tx = {
     date: "2026-03-31",
-    amountPence: p(-100),
+    amountPence: toPence(-100),
     description: "A",
-    original: { date: "2026-03-31", amountPence: p(-100), description: "A" },
+    original: {
+      date: "2026-03-31",
+      amountPence: toPence(-100),
+      description: "A",
+    },
   }
 
   it("is false when nothing changed", () => {
@@ -45,7 +47,7 @@ describe("edited", () => {
 
   it.each([
     ["date", { date: "2026-03-30" }],
-    ["amount", { amountPence: p(-200) }],
+    ["amount", { amountPence: toPence(-200) }],
     ["description", { description: "B" }],
   ])("is true when the %s changed", (_name, patch) => {
     expect(edited({ ...tx, ...patch })).toBe(true)
@@ -70,14 +72,14 @@ describe("kind", () => {
     [-100, "Transfers", "transfer"],
     [100, "Transfers", "transfer"],
   ] as const)("%i in %s is %s", (amount, category, expected) => {
-    expect(kind({ amountPence: p(amount), category })).toBe(expected)
+    expect(kind({ amountPence: toPence(amount), category })).toBe(expected)
   })
 })
 
 describe("rowProblems", () => {
   const ok = {
     date: "2026-03-31",
-    amountPence: p(-100),
+    amountPence: toPence(-100),
     description: "A",
     category: "Groceries" as const,
   }
@@ -94,21 +96,21 @@ describe("rowProblems", () => {
     expect(rowProblems({ ...ok, amountPence: null })).toEqual([
       "amount is not a number",
     ])
-    expect(rowProblems({ ...ok, amountPence: p(0) })).toEqual([
+    expect(rowProblems({ ...ok, amountPence: toPence(0) })).toEqual([
       "amount is zero",
     ])
     expect(rowProblems({ ...ok, description: " " })).toEqual([
       "description is empty",
     ])
     expect(
-      rowProblems({ ...ok, category: "Income", amountPence: p(-5) }),
+      rowProblems({ ...ok, category: "Income", amountPence: toPence(-5) }),
     ).toEqual(["income cannot be negative"])
   })
 })
 
 const row = (patch: Partial<ReviewRow>): ReviewRow => ({
   date: "2026-03-10",
-  amountPence: p(-1000),
+  amountPence: toPence(-1000),
   description: "X",
   category: "Other",
   sourceType: "csv",
@@ -131,16 +133,28 @@ describe("summarise", () => {
 
   it("totals only rows that will be saved, and counts every row", () => {
     const summary = summarise([
-      row({ date: "2026-03-10", amountPence: p(-1000) }),
-      row({ date: "2026-03-02", amountPence: p(250000), category: "Income" }),
-      row({ date: "2026-03-20", amountPence: p(-500), rowState: "duplicate" }),
+      row({ date: "2026-03-10", amountPence: toPence(-1000) }),
+      row({
+        date: "2026-03-02",
+        amountPence: toPence(250000),
+        category: "Income",
+      }),
+      row({
+        date: "2026-03-20",
+        amountPence: toPence(-500),
+        rowState: "duplicate",
+      }),
       row({
         date: "2026-03-25",
-        amountPence: p(-700),
+        amountPence: toPence(-700),
         rowState: "duplicate",
         include: true,
       }),
-      row({ date: "2026-01-01", amountPence: p(-9), rowState: "dropped" }),
+      row({
+        date: "2026-01-01",
+        amountPence: toPence(-9),
+        rowState: "dropped",
+      }),
       row({ date: null, amountPence: null, rowState: "needs-fix" }),
     ])
     expect(summary).toEqual({
@@ -156,23 +170,27 @@ describe("summarise", () => {
 
 describe("checkBalance", () => {
   it("is not-given unless both balances are given", () => {
-    expect(checkBalance(undefined, p(100), p(0))).toEqual({
+    expect(checkBalance(undefined, toPence(100), toPence(0))).toEqual({
       status: "not-given",
     })
-    expect(checkBalance(p(100), undefined, p(0))).toEqual({
+    expect(checkBalance(toPence(100), undefined, toPence(0))).toEqual({
       status: "not-given",
     })
   })
 
   it("is ok when opening plus net equals closing", () => {
-    expect(checkBalance(p(10000), p(8500), p(-1500))).toEqual({ status: "ok" })
+    expect(checkBalance(toPence(10000), toPence(8500), toPence(-1500))).toEqual(
+      { status: "ok" },
+    )
   })
 
   it("reports the difference when it does not", () => {
-    expect(checkBalance(p(10000), p(8000), p(-1500))).toEqual({
-      status: "mismatch",
-      expectedClosingPence: 8500,
-      differencePence: -500,
-    })
+    expect(checkBalance(toPence(10000), toPence(8000), toPence(-1500))).toEqual(
+      {
+        status: "mismatch",
+        expectedClosingPence: 8500,
+        differencePence: -500,
+      },
+    )
   })
 })
