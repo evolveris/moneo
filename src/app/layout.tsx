@@ -1,21 +1,21 @@
-import type { Metadata } from "next"
-import { Geist, SUSE_Mono } from "next/font/google"
-import "./globals.css"
+import type { Metadata } from "next";
+import { Geist, SUSE_Mono } from "next/font/google";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-})
+});
 
 const suseMono = SUSE_Mono({
   variable: "--font-suse-mono",
   subsets: ["latin"],
-})
+});
 
 export const metadata: Metadata = {
   title: "Moneo",
   description: "The why behind the buy.",
-}
+};
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -37,5 +37,5 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </main>
       </body>
     </html>
-  )
+  );
 }

@@ -81,12 +81,16 @@
   document.querySelectorAll("[data-open-dialog]").forEach(function (b) {
     b.addEventListener("click", function () {
       var d = document.getElementById(b.dataset.openDialog);
-      if (d && d.showModal) d.showModal();
+      if (d && d.showModal) {
+        d.showModal();
+      }
     });
   });
   document.addEventListener("click", function (e) {
     var close = e.target.closest("[data-close-dialog]");
-    if (close) close.closest("dialog").close();
+    if (close) {
+      close.closest("dialog").close();
+    }
   });
 
   // ---------- reset demo: confirm, wipe, land on Import > Choose source ----------

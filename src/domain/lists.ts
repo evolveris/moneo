@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 // Fixed lists from the SPEC (D-042). No custom values in v1.
 export const CATEGORIES = [
@@ -13,7 +13,7 @@ export const CATEGORIES = [
   "Other",
   "Income",
   "Transfers",
-] as const
+] as const;
 
 export const MOODS = [
   "happy",
@@ -24,7 +24,7 @@ export const MOODS = [
   "excited",
   "calm",
   "tired",
-] as const
+] as const;
 
 export const MOTIVATIONS = [
   "need",
@@ -36,7 +36,7 @@ export const MOTIVATIONS = [
   "deal or sale",
   "social media",
   "unwell",
-] as const
+] as const;
 
 export const OUTCOMES = [
   "glad I bought it",
@@ -45,14 +45,14 @@ export const OUTCOMES = [
   "unused",
   "returned",
   "sold",
-] as const
+] as const;
 
-export const CategorySchema = z.enum(CATEGORIES)
-export const MoodSchema = z.enum(MOODS)
-export const MotivationSchema = z.enum(MOTIVATIONS)
-export const OutcomeSchema = z.enum(OUTCOMES)
+export const CategorySchema = z.enum(CATEGORIES);
+export const MoodSchema = z.enum(MOODS);
+export const MotivationSchema = z.enum(MOTIVATIONS);
+export const OutcomeSchema = z.enum(OUTCOMES);
 
-export type Category = z.infer<typeof CategorySchema>
-export type Mood = z.infer<typeof MoodSchema>
-export type Motivation = z.infer<typeof MotivationSchema>
-export type Outcome = z.infer<typeof OutcomeSchema>
+export type Category = z.infer<typeof CategorySchema>;
+export type Mood = z.infer<typeof MoodSchema>;
+export type Motivation = z.infer<typeof MotivationSchema>;
+export type Outcome = z.infer<typeof OutcomeSchema>;

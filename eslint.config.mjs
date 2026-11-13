@@ -1,10 +1,10 @@
-import { defineConfig, globalIgnores } from "eslint/config"
-import prettier from "eslint-config-prettier/flat"
-import nextVitals from "eslint-config-next/core-web-vitals"
-import nextTs from "eslint-config-next/typescript"
-import tseslint from "typescript-eslint"
+import { defineConfig, globalIgnores } from "eslint/config";
+import prettier from "eslint-config-prettier/flat";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+import tseslint from "typescript-eslint";
 
-const tsFiles = ["**/*.ts", "**/*.tsx", "**/*.mts"]
+const tsFiles = ["**/*.ts", "**/*.tsx", "**/*.mts"];
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -52,6 +52,9 @@ const eslintConfig = defineConfig([
   },
   // Must come last: turns off rules that would fight Prettier.
   prettier,
+  // Always use braces, even for one-line if, else and loops. eslint-config-prettier
+  // lists curly as a rule that can be turned on again safely with "all".
+  { rules: { curly: ["error", "all"] } },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
@@ -60,6 +63,6 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
-])
+]);
 
-export default eslintConfig
+export default eslintConfig;
