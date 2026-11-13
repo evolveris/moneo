@@ -12,6 +12,7 @@ A personal finance web app (UK, GBP only) that shows where money goes and why: i
 - `docs/SPEC-DECISIONS/SPEC-DECISIONS.md`: log of every product decision (D-001 onwards) with the options considered and the author's answer.
 - `docs/ADR/ADR-001.md`: technology stack and the list of open architecture decisions.
 - `docs/ADR/ADR-002.md`: the database is Postgres on Neon (replaces Neo4j from ADR-001).
+- `docs/ADR/ADR-003.md`: the data model: tables, keys and rules on Postgres.
 - `docs/slices/README.md`: the slice plan, the current slice and its status.
 - `docs/slices/NN-name.md`: the plan for one slice, written just before that slice starts.
 - `docs/samples/`: synthetic sample files (fake data only).

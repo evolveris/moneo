@@ -1,6 +1,6 @@
 # Slice 02b: Database switch to Postgres on Neon
 
-- Status: in review
+- Status: merged
 - Journeys: none (foundation)
 - Depends on: ADR-002 (merged), slice 02 (merged)
 - Branch / PR: `slice-02b-postgres`
