@@ -11,6 +11,7 @@ A personal finance web app (UK, GBP only) that shows where money goes and why: i
 - `docs/SPEC/SPEC.md`: problem, users, journeys, Gherkin scenarios, edge cases, states. The source of truth for behaviour.
 - `docs/SPEC-DECISIONS/SPEC-DECISIONS.md`: log of every product decision (D-001 onwards) with the options considered and the author's answer.
 - `docs/ADR/ADR-001.md`: technology stack and the list of open architecture decisions.
+- `docs/ADR/ADR-002.md`: the database is Postgres on Neon (replaces Neo4j from ADR-001).
 - `docs/slices/README.md`: the slice plan, the current slice and its status.
 - `docs/slices/NN-name.md`: the plan for one slice, written just before that slice starts.
 - `docs/samples/`: synthetic sample files (fake data only).
@@ -45,7 +46,7 @@ A slice is a thin vertical piece of the app that works end to end and can be dem
 - Business logic lives in pure functions outside React, with Vitest tests for each function.
 - AI extraction goes through the `extract` interface (live and replay implementations). Usage limits come from `getLimits(visitorId)`. Do not hard-code either.
 - Demo mode and user mode are controlled by a feature flag. Code paths for one mode must not be reachable in the other.
-- Every Neo4j query for demo data is scoped to the visitor. A missing visitor filter is a data leak.
+- Every database query for demo data is scoped to the visitor. A missing visitor filter is a data leak.
 - Match the style of the surrounding code. Keep changes small and reviewable.
 
 ## Pull requests
