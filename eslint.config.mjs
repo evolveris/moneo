@@ -37,9 +37,9 @@ const eslintConfig = defineConfig([
         {
           paths: [
             {
-              name: "neo4j-driver",
+              name: "@neondatabase/serverless",
               message:
-                "Import the driver only in src/lib/neo4j.ts. Use getDriver() or a data function.",
+                "Import the driver only in src/lib/db.ts. Use getSql() or a data function.",
             },
           ],
         },
@@ -47,7 +47,7 @@ const eslintConfig = defineConfig([
     },
   },
   {
-    files: ["src/lib/neo4j.ts"],
+    files: ["src/lib/db.ts"],
     rules: { "no-restricted-imports": "off" },
   },
   // Must come last: turns off rules that would fight Prettier.

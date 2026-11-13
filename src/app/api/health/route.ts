@@ -1,11 +1,11 @@
 import { connection } from "next/server";
-import { getDriver } from "@/lib/neo4j";
+import { getSql } from "@/lib/db";
 
 export async function GET() {
   // Always run at request time, never during the build.
   await connection();
   try {
-    await getDriver().executeQuery("RETURN 1 AS ok");
+    await getSql()`SELECT 1`;
     return Response.json({ status: "ok" });
   } catch (error) {
     // The details stay in the server log, never in the response.

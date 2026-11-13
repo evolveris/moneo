@@ -35,7 +35,7 @@ npm run build
 
 - Pull requests run all of these plus `npm run build` on GitHub (`.github/workflows/ci.yml`). `next build` does not lint, so CI is what catches lint errors.
 - A Git hook (Husky and lint-staged) runs ESLint and Prettier on the files you commit. It is installed by `npm install`. `git commit --no-verify` skips it, CI does not.
-- Only `src/lib/neo4j.ts` may import `neo4j-driver`. Lint enforces it.
+- Only `src/lib/db.ts` may import `@neondatabase/serverless`. Lint enforces it.
 - After re-adding a shadcn component (it overwrites the file), run `npm run format`.
 
 ## Deploy
@@ -48,7 +48,7 @@ The app is hosted on Vercel at https://moneo-neon.vercel.app/.
 
 ## Environment variables
 
-The names the app needs are in `.env.example`. Today these are the three Neo4j ones (see Database below), plus two optional ones: `APP_MODE` (`demo` or `user`; missing or anything else means `demo`) and `USER_LIMIT_OVERRIDES` (JSON keyed by visitor ID, for example `{"visitor-id":{"maxRows":100}}`, read by `getLimits`).
+The names the app needs are in `.env.example`. Today these are `DATABASE_URL` (see Database below), plus two optional ones: `APP_MODE` (`demo` or `user`; missing or anything else means `demo`) and `USER_LIMIT_OVERRIDES` (JSON keyed by visitor ID, for example `{"visitor-id":{"maxRows":100}}`, read by `getLimits`).
 
 - Locally: copy `.env.example` to `.env.local` and fill in the values. `.env.local` is ignored by git.
 - On Vercel: add the same names under Project, Settings, Environment Variables.
@@ -57,9 +57,10 @@ Never commit real values. Only synthetic sample data goes on the deployed app.
 
 ## Database
 
-Moneo stores its data in Neo4j, hosted on AuraDB Free (https://console.neo4j.io).
+Moneo stores its data in Postgres, hosted on Neon (https://console.neon.tech). The decision is in `docs/ADR/ADR-002.md`.
 
-- **Aura** is Neo4j run for us in the cloud. **`neo4j-driver`** is the library in our server code that talks to it over the Bolt protocol (TLS, `neo4j+s://`). `src/lib/neo4j.ts` creates one driver, which is a connection pool, and reuses it. It is server-only: importing it from a Client Component fails the build.
-- **Set up:** create an AuraDB Free instance, download the credentials once (the password is shown only at creation), and put `NEO4J_URI`, `NEO4J_USERNAME` and `NEO4J_PASSWORD` in `.env.local` and on Vercel (Production and Preview). Never prefix them with `NEXT_PUBLIC_`.
-- **Health check:** `GET /api/health` runs `RETURN 1`. It answers `200 {"status":"ok"}` or `503 {"status":"error"}`. The reason for a failure is in the server log, not in the response.
-- **Paused instance:** AuraDB Free pauses after a few days without queries. If the health check returns 503 and the log shows a connection error, open the Aura console and resume the instance.
+- **Neon** runs Postgres for us in the cloud. **`@neondatabase/serverless`** is the library in our server code that talks to it, sending each query over HTTP, so there is no connection pool to manage. `src/lib/db.ts` exports `getSql()`, which returns a client for one call. It is server-only: importing it from a Client Component fails the build.
+- **Branches:** the Neon project has a `main` branch (the deployed app) and a `dev` branch (local work and Vercel previews). A branch is a copy of the database that can change without touching the other.
+- **Set up:** in the Neon console, click Connect, pick a branch, and copy the connection string. Put the `dev` string in `DATABASE_URL` in `.env.local`. On Vercel, set `DATABASE_URL` to the `main` string for Production and the `dev` string for Preview. Never prefix it with `NEXT_PUBLIC_`.
+- **Health check:** `GET /api/health` runs `SELECT 1`. It answers `200 {"status":"ok"}` or `503 {"status":"error"}`. The reason for a failure is in the server log, not in the response.
+- **Idle database:** Neon suspends an idle database and wakes it on the next query, so the first request after a quiet period is slower. The connection timeout is 10 seconds to allow for that. Your data is not affected.

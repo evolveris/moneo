@@ -14,7 +14,7 @@ A slice's detailed plan (`NN-name.md`, from `_template.md`) is written only when
 | 03 | Tooling: Vitest, lint and format, CI check, Zod installed | - | merged |
 | 03a | Design: review the draft mockups, decide the lists and fields the domain core needs | J2, J5 to J8 | merged |
 | 04 | Domain core, no UI: money in pence, Zod schemas, category and context lists, mode flag, `getLimits` | shared rules | merged |
-| 02b | Database: switch from Neo4j to Postgres on Neon (ADR-002) | - | planned |
+| 02b | Database: switch from Neo4j to Postgres on Neon (ADR-002) | - | in review |
 | 05 | Demo data and a read-only list: visitor cookie, per-visitor copy, virtualised table of 5,000 rows | J1 | planned |
 | 06 | CSV import, happy path: parser with RBS preset, basic review, save | J2 | planned |
 | 07 | Review by exception: duplicates, needs-fix, summary, balance check | J2, J5 | planned |
