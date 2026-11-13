@@ -287,6 +287,7 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 
 - Journey: none yet (new, after J8 charts)
 - Status: decided (direction); journey, label list and scenarios deferred
+- Note: the database named here was Neo4j; it is now Postgres (see D-051). The workflow is unchanged.
 - Question: Where does AI sit in the product beyond reading files and categorising? The author wants AI to read their own notes about a purchase, interpret them, and feed the result into the charts.
 - Options: (a) interpret on the fly each time a chart is drawn, nothing stored; (b) store the interpretation back in Neo4j as derived data, linked to the transaction and marked as AI-made.
 - Answer: (b). Workflow: Neo4j (notes) -> data function -> LangGraph.js workflow -> Zod -> data function -> Neo4j (derived data) -> charts. Output is a fixed label list or "unknown". The author wants to build the LangGraph workflow themselves and own the whole flow; this is the main learning goal of the "agentic" part. Privacy of notes sent to the AI provider is not a concern for now (personal app, synthetic demo data).
@@ -392,3 +393,12 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 - Status: decided
 - Answer: After a successful save the Import page shows a "Saved" step: the number saved, skipped as duplicates and dropped, the date range, and a primary button "See your insights" that opens Insights, with "View transactions" and "Import another" as secondary actions.
 - Affects: SPEC J5, mockups
+
+## D-051: Database: Postgres on Neon (replaces Neo4j)
+
+- Journey: none (foundation)
+- Status: decided
+- Question: Is a graph database the right store for Moneo, or would a relational one do?
+- Options: (a) keep Neo4j AuraDB; (b) Postgres on Neon; (c) Postgres now, and a graph database later for habits and goals if they turn out to need it.
+- Answer: (b), with (c) left possible because data access goes through data functions. Every relationship in the current plan is one hop from the transaction and every chart is a grouped sum with a join, which SQL does well. Postgres also gives cascading deletes, constraints, row-level security as an option and a place for LangGraph checkpoints. LangGraph does not need Neo4j. The graph database was partly a learning goal; that goal no longer outweighs the extra work.
+- Affects: ADR-001 (database line superseded by ADR-002); ADR-001 open decisions 1, 9; AGENTS.md visitor rule; SPEC product vision wording; slice 02b

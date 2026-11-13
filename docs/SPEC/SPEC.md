@@ -19,7 +19,7 @@ I’ll know it’s working when I can explain where my money went and why, and w
 The core of what I want to build, and to own end to end: AI that reads what I wrote about my spending, interprets it into a fixed set of labels, and writes the result back to the database, so the charts can show it. I want to understand every hop, in particular how the data travels to and from the AI, and to build the LangGraph.js workflow myself.
 
 ```
-  Neo4j (on Aura)                                  charts
+  Postgres (on Neon)                               charts
   transactions, my notes,                             ^
   mood / motivation / outcome                         |  chart queries read
         |                                             |  the derived labels
@@ -42,13 +42,13 @@ The core of what I want to build, and to own end to end: AI that reads what I wr
   (linked to the transaction, marked as AI-made)
         |
         v
-  Neo4j (on Aura)
+  Postgres (on Neon)
 ```
 
 Rules for the loop:
 - The AI never touches the database or the charts. It only receives text from a data function and returns text that Zod checks. Only validated results are written.
 - Output is a fixed label list or "unknown", never free-form labels, so charts keep a stable set of categories (same principle as category choice, D-002, D-012).
-- Derived data is stored back in Neo4j as its own thing, marked as AI-made and kept apart from what I entered, so I can inspect, correct or delete it (D-036).
+- Derived data is stored back in the database as its own thing, marked as AI-made and kept apart from what I entered, so I can inspect, correct or delete it (D-036).
 - The whole loop is subject to the same usage limits as other AI calls (`getLimits`, D-008).
 
 Status: direction only. The journey, the label list and the scenarios are not written yet, and the data model must leave room for derived data (ADR-001 open decision 1). It comes after the charts.
@@ -454,7 +454,7 @@ Edge cases:
 - Context text containing markup or script: stored as plain text and rendered escaped.
 - Context on an income or refund row: allowed.
 - Missing context is never an error; the list shows a quiet "add context" prompt only.
-- Deleting a transaction deletes its context (and its graph relationships).
+- Deleting a transaction deletes its context (and anything that points at it).
 
 #### J8. See where my money went (User, Demo user)
 
