@@ -72,6 +72,9 @@ export const TransactionSchema = z
     merchantName: z.string().min(1).optional(),
     context: ContextSchema.optional(),
     original: OriginalSchema,
+    // The balance printed on the bank row, when the file has one. Used with the
+    // original values to match duplicates (D-035).
+    runningBalancePence: PenceSchema.optional(),
     importId: z.string().min(1),
     sourceType: SourceTypeSchema,
     createdAt: z.iso.datetime(),
