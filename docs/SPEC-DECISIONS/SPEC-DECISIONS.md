@@ -272,7 +272,7 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 - Question: Imported fields were immutable (SPEC shared rules, ADR-001 open decision 5). The user wants date, amount and raw description editable in case the AI misreads them.
 - Answer: Allowed in principle. Details to settle: where they are editable (review only, or also after saving), and how duplicate detection works once a stored value has been edited. SPEC shared rules and ADR open decision 5 are to be updated once settled.
 - Update: editable in review and on stored transactions (Q30 b). This assumes the table can edit inline with 5,000 rows, recorded as ADR-001 open decision 18 (spike before committing). Duplicate handling after an edit is still being settled: the transaction ID cannot be relied on (see D-011).
-- Final: allowed in review and on stored transactions (Q30 b), validated by Zod, with original imported values kept and an "edited" marker. Edits join the 10-second undo. TanStack Table with TanStack Virtual chosen for the table; spike still to verify (ADR-001 open decision 18).
+- Final: allowed in review and on stored transactions (Q30 b), validated by Zod, with original imported values kept and an "edited" marker. Edits join the 10-second undo. TanStack Table with TanStack Virtual chosen for the table; spike still to verify (ADR-001 open decision 18). Superseded by D-052: pagination instead of virtualisation, no spike.
 - Affects: SPEC shared rules, J5, J6, duplicates (D-011); ADR-001 open decision 5
 
 ## D-035: Duplicate rule revised (replaces D-011)
@@ -402,3 +402,12 @@ Status: `open` (asked, not answered), `decided`, `deferred` (consciously postpon
 - Options: (a) keep Neo4j AuraDB; (b) Postgres on Neon; (c) Postgres now, and a graph database later for habits and goals if they turn out to need it.
 - Answer: (b), with (c) left possible because data access goes through data functions. Every relationship in the current plan is one hop from the transaction and every chart is a grouped sum with a join, which SQL does well. Postgres also gives cascading deletes, constraints, row-level security as an option and a place for LangGraph checkpoints. LangGraph does not need Neo4j. The graph database was partly a learning goal; that goal no longer outweighs the extra work.
 - Affects: ADR-001 (database line superseded by ADR-002); ADR-001 open decisions 1, 9; AGENTS.md visitor rule; SPEC product vision wording; slice 02b
+
+## D-052: The transaction table is paginated, not virtualised (supersedes the table part of D-034)
+
+- Journey: J1, J2, J5, J12
+- Status: decided
+- Question: How should a table of up to 5,000 rows behave, and is TanStack Virtual (and the spike that was planned to verify it) needed?
+- Options: (a) TanStack Table with TanStack Virtual, every row in one scrolling list; (b) TanStack Table with pagination, loaded client-side; (c) the same with server-side pagination (each page, sort and edit goes through the database).
+- Answer: (b). TanStack Table only. 80 rows per page, fixed. Numbered page navigation. Sorting by date and amount. No filtering yet (filters come later). All of the visitor's rows are loaded into the browser and paged in memory, so an edit or an undo updates local state without refreshing a page from the server. With 80 rows in the DOM there is nothing to virtualise, so TanStack Virtual is not used and the planned spike is dropped; slice 05 includes an acceptance check that paging and sorting stay quick with 5,000 rows. Infinite scrolling is a possible later change: TanStack Virtual can be added on top of TanStack Table because the table is headless, so the row rendering is the only part that changes.
+- Affects: SPEC J2 (5,000-row edge case) and the review screen "Show all rows"; ADR-001 open decision 18; slice 05 (read-only list), slice 07 (review), slice 10 (editing)
