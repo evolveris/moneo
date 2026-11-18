@@ -56,6 +56,15 @@ describe("TransactionSchema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("accepts a running balance, including a negative one", () => {
+    expect(fails({ runningBalancePence: 123456 })).toBe(false);
+    expect(fails({ runningBalancePence: -5000 })).toBe(false);
+  });
+
+  it("rejects a running balance that is not whole pence", () => {
+    expect(fails({ runningBalancePence: 12.5 })).toBe(true);
+  });
+
   it("rejects a fake date", () => {
     expect(fails({ date: "2026-02-30" })).toBe(true);
   });
