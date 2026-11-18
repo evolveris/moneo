@@ -14,7 +14,7 @@ While most budgeting apps tell you what you spent, Moneo also asks why: import a
 
 Before I used any AI, I started with a clear set of specs: the problem, the users, the journeys, and Gherkin scenarios for how the app behaves (`docs/SPEC/SPEC.md`). Everything else is built on that foundation.
 
-I use AI to write code, but I guide it all the way, making sure I review the code and understand decisions/unknowns. It has far been fantastic at helping me plan and learn. My approach is as follows:
+I use AI to write code, but I guide it all the way, making sure I review the code and understand decisions/unknowns ([see example here](https://github.com/evolveris/moneo/pull/7)). My approach is as follows:
 
 - **Planning first.** The work is split into small slices, each one a thin piece of the app that works end to end. For every slice the AI writes a plan (`docs/slices/`), and nothing is built until I approve it.
 - **Grilling.** Before I decide something big, I have the AI question me and challenge my choices, so I understand the trade-offs. This is how I moved the database from Neo4j to Postgres.
