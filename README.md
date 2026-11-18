@@ -4,11 +4,11 @@ The why behind the buy. This is a personal finance web app (UK, GBP only) that s
 
 While most budgeting apps tell you what you spent, Moneo also asks why: import a bank statement, categorise the spending, then add the mood, motivation and outcome behind a purchase and see the patterns in charts. The vision is using AI to empower me to make educated financial decisions.
 
-**Mockups:** https://moneo-neon.vercel.app/ (work in progress; the screens below are design mockups, not the finished app yet)
+**Live app:** https://moneo-neon.vercel.app/ (work in progress; the screens below are design mockups, not the finished app yet)
 
-| Import and review                                                         | Add context to a purchase                                                | Insights                                                       |
-| ------------------------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------- |
-| ![Mockup of the transactions screen](docs/images/mockup-transactions.png) | ![Mockup of adding mood and motivation](docs/images/mockup-insights.png) | ![Mockup of the import screen](docs/images/mockup-imports.png) |
+| Transactions                                                              | Insights                                                      | Import                                                         |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------- |
+| ![Mockup of the transactions screen](docs/images/mockup-transactions.png) | ![Mockup of insights screen](docs/images/mockup-insights.png) | ![Mockup of the import screen](docs/images/mockup-imports.png) |
 
 ## How I'm building this
 
