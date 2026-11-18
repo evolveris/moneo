@@ -1,6 +1,25 @@
 # Moneo
 
-The why behind the buy. A personal finance web app (UK, GBP only) that shows where money goes and why.
+The why behind the buy. This is a personal finance web app (UK, GBP only) that shows where your money goes, and why. I am building this for personal use, but also as an opportunity to acquire new skills such as LangGraph, build and own decisions across the stack, and learn how to best work with AI.
+
+While most budgeting apps tell you what you spent, Moneo also asks why: import a bank statement, categorise the spending, then add the mood, motivation and outcome behind a purchase and see the patterns in charts. The vision is using AI to empower me to make educated financial decisions.
+
+**Mockups:** https://moneo-neon.vercel.app/ (work in progress; the screens below are design mockups, not the finished app yet)
+
+| Import and review                                                         | Add context to a purchase                                                | Insights                                                       |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------- |
+| ![Mockup of the transactions screen](docs/images/mockup-transactions.png) | ![Mockup of adding mood and motivation](docs/images/mockup-insights.png) | ![Mockup of the import screen](docs/images/mockup-imports.png) |
+
+## How I'm building this
+
+Before I used any AI, I started with a clear set of specs: the problem, the users, the journeys, and Gherkin scenarios for how the app behaves (`docs/SPEC/SPEC.md`). Everything else is built on that foundation.
+
+I use AI to write code, but I guide it all the way, making sure I review the code and understand decisions/unknowns. It has far been fantastic at helping me plan and learn. My approach is as follows:
+
+- **Planning first.** The work is split into small slices, each one a thin piece of the app that works end to end. For every slice the AI writes a plan (`docs/slices/`), and nothing is built until I approve it.
+- **Grilling.** Before I decide something big, I have the AI question me and challenge my choices, so I understand the trade-offs. This is how I moved the database from Neo4j to Postgres.
+- **Everything written down.** Product decisions are logged in `docs/SPEC-DECISIONS/`, and technical decisions are architecture decision records in `docs/ADR/`.
+- **Rules for the AI.** `AGENTS.md` says what the AI may and may not do. For example, it never merges: I review every pull request and merge it myself.
 
 Project rules for contributors and AI agents are in `AGENTS.md`. The slice plan is in `docs/slices/README.md`.
 
