@@ -15,7 +15,7 @@ A slice's detailed plan (`NN-name.md`, from `_template.md`) is written only when
 | 03a | Design: review the draft mockups, decide the lists and fields the domain core needs | J2, J5 to J8 | merged |
 | 04 | Domain core, no UI: money in pence, Zod schemas, category and context lists, mode flag, `getLimits` | shared rules | merged |
 | 02b | Database: switch from Neo4j to Postgres on Neon (ADR-002) | - | merged |
-| 05 | Demo data and a read-only list: visitor cookie, per-visitor copy, virtualised table of 5,000 rows | J1 | planned |
+| 05 | Demo data and a read-only list: visitor cookie, per-visitor copy, paginated table of 5,000 rows (D-052) | J1 | planned |
 | 06 | CSV import, happy path: parser with RBS preset, basic review, save | J2 | planned |
 | 07 | Review by exception: duplicates, needs-fix, summary, balance check | J2, J5 | planned |
 | | **Milestone 1: demo-ready** | | |
@@ -35,7 +35,7 @@ J11 (two of us) waits for auth and is not sliced yet.
 These are decisions or spikes the slice depends on. Do them first, as small separate pieces of work.
 
 - **Before slice 05:** ~~the Postgres switch (slice 02b) and the data model ADR~~ done: ADR-002 and ADR-003. Slices 05 to 07 write transactions to the database; the tables are in ADR-003.
-- **Before slice 05:** table spike (ADR-001 open decision 18): 5,000 rows, one editable column, Zod on commit, keyboard navigation.
+- **Before slice 05:** ~~table spike (ADR-001 open decision 18)~~ dropped by D-052: paginated table, no virtualisation. Slice 05 checks speed with 5,000 rows instead.
 - **Before slice 05:** ~~decide the dev database~~ answered by ADR-002: Neon branches, `dev` for local and `main` for deployed.
 - **Before slice 06:** a decision on how the CSV parser learns the layout (ADR-001 open decision 12). Presets only is enough to start.
 - **Before slice 08:** LangGraph.js spike (ADR-001 open decisions 9 and 14), and the decision on the multimodal model (open decision 10) before slices 13 and 14.

@@ -229,7 +229,7 @@ Edge cases:
 - Empty file, header-only file, or file with a different column layout: rejected with a specific message, not a generic error.
 - Different delimiters, quoted commas in descriptions, BOM, UK date format (DD/MM/YYYY) vs ISO.
 - Amounts like `1,234.56`, `-£5.00`, `(5.00)`; all must parse to the right integer pence, never via floating point.
-- 5,000-row file: review list stays responsive (virtualised list); upload over 5,000 rows is rejected with the limit stated.
+- 5,000-row file: review list stays responsive (paginated, 80 rows per page, D-052); upload over 5,000 rows is rejected with the limit stated.
 - File over 5 MB: rejected before extraction.
 - Duplicate definition (D-011, revised by D-035): a row is a duplicate of a stored row when its date, amount and raw description match, plus the running balance when the file has one. A bank transaction ID is used as an extra only if a file has one; the expected RBS layout has none. Matching is by count: two identical rows in the file against one stored identical row gives one duplicate and one new row. Matching uses the original imported values, so edits do not cause re-imports. The user can always include a flagged duplicate in review.
 - User closes the tab during review: nothing saved, no partial import.
@@ -310,7 +310,7 @@ Applies to J2, J3 and J4.
 - **Summary**: row count, date range, money in, money out, net, and counts per row state (valid, needs-fix, duplicate, unknown category).
 - **Balance check (optional)**: opening and closing balance fields, prefilled when the file contains them. If they are filled in and opening balance plus net does not equal closing balance, a warning is shown. The user can still confirm.
 - **Exceptions list** (the default view): `needs-fix` rows, `duplicate` rows and rows with an unknown category. Rows with a category are not listed.
-- **Show all rows**: a virtualised list of every row, filterable by row state.
+- **Show all rows**: every row, 80 per page with numbered page navigation (D-052), filterable by row state.
 - **Editing**: any row's date, amount and description can be edited in the table, as click-to-edit cells validated on commit (D-034, ADR-001 open decision 18).
 - **Bulk actions**: skip all duplicates, include all duplicates, drop selected rows.
 - **Categories are assigned before review** (D-012). The AI must pick a category from the fixed list or answer "unknown" (D-020). A row with an unknown category is flagged "? Unknown category" and cannot be saved until the user picks a category in review or drops the row (D-037).
